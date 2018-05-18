@@ -1,7 +1,6 @@
 import requests as req
 import json
 
-__author__ = "Change me"
 
 RIMINDER_API_URL = "https://www.riminder.net/sf/public/api/v1.0/"
 
