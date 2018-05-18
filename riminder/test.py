@@ -38,9 +38,8 @@ class TestProfile(unittest.TestCase):
         file_path = "riminder/test_assets/file.pdf"
         res = self.profile.create_profile(
             source_id="5823bc959983f7a5925a5356020e60d605e8c9b5",
-            file=("file.pdf", open(file_path, 'rb'), 'application/pdf'),
+            file_path=file_path,
         )
-
         self.assertEqual(res["code"], 201)
 
     def test_get_one_profile(self):

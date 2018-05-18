@@ -1,4 +1,6 @@
 from riminder import Riminder
+import magic
+import os
 
 SERNIORITY_VALUES = ["all", "senior", "junior"]
 STAGE_VALUES = [None, "NEW", "YES", "LATER", "NO"]
@@ -31,14 +33,15 @@ class Profile(object):
         response = self.client.get("profiles", query_params)
         return response.json()
 
-    def create_profile(self, source_id=None, file=None, profile_reference=None,
+    def create_profile(self, source_id=None, file_path=None, profile_reference=None,
                        timestamp_reception=None):
         data = {}
         data["source_id"] = self._validate_source_id(source_id)
         data["profile_reference"] = profile_reference
         data["timestamp_reception"] = timestamp_reception
+        files = self._get_file(file_path)
 
-        response = self.client.post("profile", data=data, files={"file": file})
+        response = self.client.post("profile", data=data, files={"file": files})
         return response.json()
 
     def get_by_id(self, source_id=None, profile_id=None):
@@ -92,6 +95,17 @@ class Profile(object):
 
         response = self.client.patch(resource_endpoint, data=data)
         return response.json()
+
+    def _get_file(self, file_path):
+
+        try:
+            return (
+                os.path.basename(file_path),  # file_name
+                open(file_path, 'rb'),
+                magic.Magic(mime=True).from_file(file_path)
+            )
+        except Exception as e:
+            raise Exception(repr(e))
 
     def _validate_source_ids(self, value):
         if not isinstance(value, list):
