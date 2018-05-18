@@ -31,12 +31,86 @@ class Profile(object):
         response = self.client.get("profiles", query_params)
         return response.json()
 
+    def create_profile(self, source_id=None, file=None, profile_reference=None,
+                       timestamp_reception=None):
+        data = {}
+        data["source_id"] = self._validate_source_id(source_id)
+        data["profile_reference"] = profile_reference
+        data["timestamp_reception"] = timestamp_reception
+
+        response = self.client.post("profile", data=data, files={"file": file})
+        return response.json()
+
+    def get_by_id(self, source_id=None, profile_id=None):
+        query_params = {}
+        query_params["source_id"] = self._validate_source_id(source_id)
+        resource_endpoint = "profile/{}".format(self._validate_profile_id(profile_id))
+
+        response = self.client.get(resource_endpoint, query_params)
+        return response.json()
+
+    def get_documents(self, source_id=None, profile_id=None):
+        query_params = {}
+        query_params["source_id"] = self._validate_source_id(source_id)
+        resource_endpoint = "profile/{}/documents".format(self._validate_profile_id(profile_id))
+
+        response = self.client.get(resource_endpoint, query_params)
+        return response.json()
+
+    def get_extractions(self, source_id=None, profile_id=None):
+        query_params = {}
+        query_params["source_id"] = self._validate_source_id(source_id)
+        resource_endpoint = "profile/{}/extractions".format(self._validate_profile_id(profile_id))
+
+        response = self.client.get(resource_endpoint, query_params)
+        return response.json()
+
+    def get_jobs(self, source_id=None, profile_id=None):
+        query_params = {}
+        query_params["source_id"] = self._validate_source_id(source_id)
+        resource_endpoint = "profile/{}/jobs".format(self._validate_profile_id(profile_id))
+
+        response = self.client.get(resource_endpoint, query_params)
+        return response.json()
+
+    def update_stage(self, source_id=None, profile_id=None, job_id=None, stage=None):
+        data = {}
+        data["source_id"] = self._validate_source_id(source_id)
+        data["job_id"] = self._validate_job_id(job_id)
+        data["stage"] = self._validate_stage(stage)
+        resource_endpoint = "profile/{}/stage".format(self._validate_profile_id(profile_id))
+
+        response = self.client.patch(resource_endpoint, data=data)
+        return response.json()
+
+    def update_rating(self, source_id=None, profile_id=None, job_id=None, rating=None):
+        data = {}
+        data["source_id"] = self._validate_source_id(source_id)
+        data["job_id"] = self._validate_job_id(job_id)
+        data["rating"] = self._validate_rating(rating)
+        resource_endpoint = "profile/{}/rating".format(self._validate_profile_id(profile_id))
+
+        response = self.client.patch(resource_endpoint, data=data)
+        return response.json()
+
     def _validate_source_ids(self, value):
         if not isinstance(value, list):
             raise TypeError("source_ids must be a list")
 
         if not value or not all(isinstance(elt, str) for elt in value):
             raise TypeError("source_ids must contain list of strings")
+
+        return value
+
+    def _validate_source_id(self, value):
+        if not isinstance(value, str) and value is not None:
+            raise TypeError("source_id must be string")
+
+        return value
+
+    def _validate_profile_id(self, value):
+        if not isinstance(value, str) and value is not None:
+            raise TypeError("source_id must be string")
 
         return value
 
@@ -79,6 +153,12 @@ class Profile(object):
     def _validate_limit(self, value):
         if not isinstance(value, int):
             raise TypeError("limit must be 'int'")
+
+        return value
+
+    def _validate_rating(self, value):
+        if not isinstance(value, int):
+            raise TypeError("rating must be 'int'")
 
         return value
 

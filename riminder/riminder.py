@@ -1,4 +1,5 @@
 import requests as req
+import json
 
 __author__ = "Change me"
 
@@ -21,3 +22,14 @@ class Riminder(object):
     def get(self, resource_endpoint, query_params={}):
         url = self._create_request_url(resource_endpoint)
         return req.get(url, headers=self.auth_header, params=query_params)
+
+    def post(self, resource_endpoint, data={}, files=None):
+        url = self._create_request_url(resource_endpoint)
+        if files:
+            return req.post(url, headers=self.auth_header, files=files, data=data)
+        else:
+            return req.post(url, headers=self.auth_header, data=data)
+
+    def patch(self, resource_endpoint, data={}):
+        url = self._create_request_url(resource_endpoint)
+        return req.patch(url, headers=self.auth_header, data=data)
