@@ -1,10 +1,8 @@
 import unittest
 from riminder import Riminder
 from profile import Profile
-# import magic
+from source import Source
 
-
-# mime = magic.open(magic.MAGIC_NONE)
 
 
 class TestProfile(unittest.TestCase):
@@ -44,7 +42,7 @@ class TestProfile(unittest.TestCase):
 
     def test_get_one_profile(self):
         res = self.profile.get_by_id(
-            source_id="c1a0733759505f25e07596cd017a04afad409809",
+            source_id="5823bc959983f7a5925a5356020e60d605e8c9b5",
             profile_id="5d20da1c2d7bb0a6956764a8b0b61c0371540ce6",
         )
 
@@ -52,7 +50,7 @@ class TestProfile(unittest.TestCase):
 
     def test_get_documents(self):
         res = self.profile.get_documents(
-            source_id="c1a0733759505f25e07596cd017a04afad409809",
+            source_id="5823bc959983f7a5925a5356020e60d605e8c9b5",
             profile_id="5d20da1c2d7bb0a6956764a8b0b61c0371540ce6",
         )
 
@@ -60,7 +58,7 @@ class TestProfile(unittest.TestCase):
 
     def test_get_extractions(self):
         res = self.profile.get_extractions(
-            source_id="c1a0733759505f25e07596cd017a04afad409809",
+            source_id="5823bc959983f7a5925a5356020e60d605e8c9b5",
             profile_id="5d20da1c2d7bb0a6956764a8b0b61c0371540ce6",
         )
 
@@ -68,7 +66,7 @@ class TestProfile(unittest.TestCase):
 
     def test_get_jobs(self):
         res = self.profile.get_jobs(
-            source_id="c1a0733759505f25e07596cd017a04afad409809",
+            source_id="5823bc959983f7a5925a5356020e60d605e8c9b5",
             profile_id="5d20da1c2d7bb0a6956764a8b0b61c0371540ce6",
         )
 
@@ -93,6 +91,29 @@ class TestProfile(unittest.TestCase):
         )
         print(res)
 
+        self.assertEqual(res["code"], 200)
+
+
+class TestSource(unittest.TestCase):
+
+    def setUp(self):
+        # init client and profile objects
+        self.client = Riminder(api_key="ask_ce813e1812ebeb663489abdad8b13aea")
+        self.source = Source(self.client)
+
+    def test_get_all(self):
+        # get all sources
+        res = self.source.get_all()
+
+        print(res)
+        self.assertEqual(res["code"], 200)
+
+    def test_get_one_profile(self):
+        # get one source by id
+        res = self.source.get_by_id(
+            source_id="5823bc959983f7a5925a5356020e60d605e8c9b5"
+        )
+        print(res)
         self.assertEqual(res["code"], 200)
 
 

@@ -20,7 +20,11 @@ class Riminder(object):
 
     def get(self, resource_endpoint, query_params={}):
         url = self._create_request_url(resource_endpoint)
-        return req.get(url, headers=self.auth_header, params=query_params)
+
+        if query_params:
+            return req.get(url, headers=self.auth_header, params=query_params)
+        else:
+            return req.get(url, headers=self.auth_header)
 
     def post(self, resource_endpoint, data={}, files=None):
         url = self._create_request_url(resource_endpoint)
