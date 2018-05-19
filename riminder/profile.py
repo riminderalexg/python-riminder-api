@@ -85,7 +85,7 @@ class Profile(object):
         response = self.client.get("profiles", query_params)
         return response.json()
 
-    def create_profile(self, source_id=None, file_path=None, profile_reference=None,
+    def create_profile(self, source_id=None, file_path=None, profile_reference="",
                        timestamp_reception=None):
         """
         Add a profile resume to a sourced id
@@ -95,7 +95,7 @@ class Profile(object):
                                     source id
             file_path:              <string>
                                     local path to resume file
-            profile_reference:      <string>
+            profile_reference:      <string> (default to "")
                                     reference to assign to the profile
             timestamp_reception:    <string>
                                     original date of the application of the profile

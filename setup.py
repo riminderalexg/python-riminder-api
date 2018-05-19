@@ -7,5 +7,9 @@ setup(name='riminder',
       author='mnouayti',
       author_email='med.nouayti@gmail.com',
       license='MIT',
-      packages=['requests==2.18.4', 'python-magic==0.4.15'],
+      packages=['riminder'],
+      install_requires=[
+          'requests==2.18.4',
+          'python-magic==0.4.15'
+      ],
       zip_safe=False)
