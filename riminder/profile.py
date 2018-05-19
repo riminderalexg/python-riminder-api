@@ -8,8 +8,39 @@ SORT_BY_VALUES = [None, "CREATION", "DESC", "RECEPTION", "RANKING"]
 
 
 class Profile(object):
+    """Class that interacts with Riminder API profiles endpoint.
+
+    Usage example:
+
+    >>> from riminder import Riminder
+    >>> from riminder.profile import Profile
+    >>> client = Riminder(api_key="YOUR_API_KEY")
+    >>> profile = Profile(self.client)
+    >>> result = profile.get_all(source_ids=["5823bc959983f7a5925a5356020e60d605e8c9b5"])
+    >>> print(result)
+    {
+        "code": 200,
+        "message": "OK",
+        "data": {
+            "page": 1,
+            "maxPage": 3,
+            "count_profiles": 85,
+            "profiles": [
+            {
+                "profile_id": "215de6cb5099f4895149ec0a6ac91be94ffdd246",
+                "profile_reference": "49583",
+                ...
+    """
 
     def __init__(self, client):
+        """
+        Initialize Profile object with Riminder client.
+        Args:
+            client: Riminder client instance <Riminder object>
+
+        Returns:
+            Profile instance object.
+        """
         if not isinstance(client, Riminder):
             raise TypeError("client must be instance of Riminder class")
 
@@ -18,7 +49,28 @@ class Profile(object):
     def get_all(self, source_ids=None, seniority="all", stage=None,
                 date_start="1494539999", date_end="1502488799", job_id=None,
                 page=1, limit=30, sort_by=None):
+        """
+        Retreive all profiles that match the query param
 
+        Args:
+            date_end:   <string> REQUIRED (default to "1502488799")
+                        profiles' last date of reception
+            date_start: <string> REQUIRED (default to "1494539999")
+                        profiles' first date of reception
+            job_id:     <string>
+            limit:      <int> (default to 30)
+                        number of fetched profiles/page
+            page:       <int> REQUIRED default to 1
+                        number of the page associated to the pagination
+            seniority:  <string> defaut to "all"
+                        profiles' seniority ("all", "senior", "junior")
+            sort_by:    <string>
+            source_ids: <array of strings> REQUIRED
+            stage:      <string>
+
+        Returns:
+            Retrieve the profiles data as <dict>
+        """
         query_params = {}
         query_params["date_end"] = self._validate_date_end(date_end)
         query_params["date_start"] = self._validate_date_start(date_start)
@@ -35,11 +87,28 @@ class Profile(object):
 
     def create_profile(self, source_id=None, file_path=None, profile_reference=None,
                        timestamp_reception=None):
+        """
+        Add a profile resume to a sourced id
+
+        Args:
+            source_id:              <string>
+                                    source id
+            file_path:              <string>
+                                    local path to resume file
+            profile_reference:      <string>
+                                    reference to assign to the profile
+            timestamp_reception:    <string>
+                                    original date of the application of the profile
+
+        Returns:
+            Response that contains code 201 if successful
+            Other status codes otherwise.
+        """
         data = {}
         data["source_id"] = self._validate_source_id(source_id)
-        data["profile_reference"] = profile_reference
-        data["timestamp_reception"] = timestamp_reception
-        files = self._get_file(file_path)
+        data["profile_reference"] = self._validate_profile_reference(profile_reference)
+        data["timestamp_reception"] = self._validate_timestamp_reception(timestamp_reception)
+        files = self._get_file(file_path, profile_reference)
 
         response = self.client.post("profile", data=data, files={"file": files})
         return response.json()
@@ -96,11 +165,11 @@ class Profile(object):
         response = self.client.patch(resource_endpoint, data=data)
         return response.json()
 
-    def _get_file(self, file_path):
+    def _get_file(self, file_path, profile_reference):
 
         try:
             return (
-                os.path.basename(file_path),  # file_name
+                os.path.basename(file_path) + profile_reference,  # file_name
                 open(file_path, 'rb'),
                 magic.Magic(mime=True).from_file(file_path)
             )
@@ -179,5 +248,17 @@ class Profile(object):
     def _validate_sort_by(self, value):
         if value not in SORT_BY_VALUES:
             raise ValueError("sort_by value must be in {}".format(str(SORT_BY_VALUES)))
+
+        return value
+
+    def _validate_profile_reference(self, value):
+        if not isinstance(value, str) and value is not None:
+            raise TypeError("profile_reference must be string")
+
+        return value
+
+    def _validate_timestamp_reception(self, value):
+        if not isinstance(value, str) and value is not None:
+            raise TypeError("timestamp_reception must be string")
 
         return value
