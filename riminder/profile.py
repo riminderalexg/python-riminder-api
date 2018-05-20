@@ -114,6 +114,18 @@ class Profile(object):
         return response.json()
 
     def get_by_id(self, source_id=None, profile_id=None):
+        """
+        Retrieve the profile information associated with profile id
+
+        Args:
+            source_id:              <string>
+                                    source id
+            profile_id:             <string>
+                                    profile id
+
+        Returns:
+            profile information
+        """
         query_params = {}
         query_params["source_id"] = self._validate_source_id(source_id)
         resource_endpoint = "profile/{}".format(self._validate_profile_id(profile_id))
@@ -122,6 +134,18 @@ class Profile(object):
         return response.json()
 
     def get_documents(self, source_id=None, profile_id=None):
+        """
+        Retrieve the file information
+
+        Args:
+            source_id:              <string>
+                                    source id
+            profile_id:             <string>
+                                    profile id
+
+        Returns:
+            document information, like type, name, extension, url.. associated to the profile id
+        """
         query_params = {}
         query_params["source_id"] = self._validate_source_id(source_id)
         resource_endpoint = "profile/{}/documents".format(self._validate_profile_id(profile_id))
@@ -130,6 +154,18 @@ class Profile(object):
         return response.json()
 
     def get_extractions(self, source_id=None, profile_id=None):
+        """
+        Retrieve the profile career's path associated with profile id
+
+        Args:
+            source_id:              <string>
+                                    source id
+            profile_id:             <string>
+                                    profile id
+
+        Returns:
+            response see: https://developers.riminder.net/v1.0/reference#profileidextractions
+        """
         query_params = {}
         query_params["source_id"] = self._validate_source_id(source_id)
         resource_endpoint = "profile/{}/extractions".format(self._validate_profile_id(profile_id))
@@ -138,6 +174,18 @@ class Profile(object):
         return response.json()
 
     def get_jobs(self, source_id=None, profile_id=None):
+        """
+        Retrieve the profile assessments associated with profile id
+
+        Args:
+            source_id:              <string>
+                                    source id
+            profile_id:             <string>
+                                    profile id
+
+        Returns:
+            response see: https://developers.riminder.net/v1.0/reference#profileidjobs
+        """
         query_params = {}
         query_params["source_id"] = self._validate_source_id(source_id)
         resource_endpoint = "profile/{}/jobs".format(self._validate_profile_id(profile_id))
@@ -146,6 +194,24 @@ class Profile(object):
         return response.json()
 
     def update_stage(self, source_id=None, profile_id=None, job_id=None, stage=None):
+        """
+        Edit the profile stage given a job
+
+        Args:
+            profile_id:             <string>
+                                    profile id
+        body params:
+            source_id:              <string>
+                                    source id associated to the profile
+            
+            job_id:                 <string>
+                                    job id
+            stage:                 <string>
+                                    profiles' stage associated to the job ( null for all, NEW, YES, LATER or NO).
+
+        Returns:
+            response code, message, and data as <dict>
+        """
         data = {}
         data["source_id"] = self._validate_source_id(source_id)
         data["job_id"] = self._validate_job_id(job_id)
@@ -156,6 +222,24 @@ class Profile(object):
         return response.json()
 
     def update_rating(self, source_id=None, profile_id=None, job_id=None, rating=None):
+        """
+        Edit the profile rating given a job
+
+        Args:
+            profile_id:             <string>
+                                    profile id
+        body params:
+            source_id:              <string>
+                                    source id associated to the profile
+            
+            job_id:                 <string>
+                                    job id
+            rating:                 <int32>
+                                    profile rating from 1 to 4 associated to the job.
+
+        Returns:
+            response code 200 if ok, message, and data as <dict>
+        """
         data = {}
         data["source_id"] = self._validate_source_id(source_id)
         data["job_id"] = self._validate_job_id(job_id)
