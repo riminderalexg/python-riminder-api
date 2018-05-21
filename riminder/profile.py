@@ -210,7 +210,8 @@ class Profile(object):
                                     profiles' stage associated to the job ( null for all, NEW, YES, LATER or NO).
 
         Returns:
-            response code, message, and data as <dict>
+            Response that contains code 201 if successful
+            Other status codes otherwise.
         """
         data = {}
         data["source_id"] = self._validate_source_id(source_id)
@@ -238,7 +239,8 @@ class Profile(object):
                                     profile rating from 1 to 4 associated to the job.
 
         Returns:
-            response code 200 if ok, message, and data as <dict>
+            Response that contains code 201 if successful
+            Other status codes otherwise.
         """
         data = {}
         data["source_id"] = self._validate_source_id(source_id)
