@@ -85,56 +85,56 @@ Example Job
 
 ## Profile
 
-* get_all()
+* get_all().
 Retreive all profiles that match the query param, only source_ids are required
 
 ```
     profile.get_all(source_ids, seniority, stage, date_start, date_end, job_id, page, limit, sort_by)
 ```
 
-* create_profile()
+* create_profile().
 Add a profile resume to a sourced id
 
 ```
     profile.create_profile(source_id, file_path, profile_reference, timestamp_reception)
 ```
 
-* get_by_id()
+* get_by_id().
 Retrieve the profile information associated with profile id, source_id and profile_id are required
 
 ```
     profile.get_by_id(source_id, profile_id)
 ```
 
-* get_documents()
+* get_documents().
 Retrieve the profile information associated with profile id, source_id and profile_id are required
 
 ```
     profile.get_documents(source_id, profile_id)
 ```
 
-* get_extractions()
+* get_extractions().
 Retrieve the profile career's path associated with profile id, source_id and profile_id are required
 
 ```
     profile.get_extractions(source_id, profile_id)
 ```
 
-* get_extractions()
+* get_extractions().
 Retrieve the profile assessments associated with profile id, source_id and profile_id are required
 
 ```
     profile.get_jobs(source_id, profile_id)
 ```
 
-* update_stage()
+* update_stage().
 Edit the profile stage given a job, source_id, profile_id and job_id are required
 
 ```
     profile.update_stage(source_id, profile_id, job_id, stage)
 ```
 
-* update_rating
+* update_rating.
 Edit the profile rating given a job, all params are required
 
 ```
@@ -144,14 +144,14 @@ Edit the profile rating given a job, all params are required
 
 ## Source
 
-* get_all()
+* get_all().
 get all sources
 
 ```
     source.get_all()
 ```
 
-* get_by_id()
+* get_by_id().
 Retrieve the source information associated with source id (required)
 
 ```
@@ -160,14 +160,14 @@ Retrieve the source information associated with source id (required)
 
 ## job
 
-* get_all()
+* get_all().
 Retrieve all jobs for given team account
 
 ```
     job.get_all()
 ```
 
-* get_by_id()
+* get_by_id().
 Retrieve the job information associated with the job_id (required)
 
 ```
@@ -176,7 +176,8 @@ Retrieve the job information associated with the job_id (required)
 
 
 # Tests
-All code is unit tested
+
+All code is unit tested.
 To run the test, please follow these steps
 * `git clone https://github.com/Riminder/python-riminder-api`
 * From your python virtual environment navigate to the project directory and install requirements
@@ -188,7 +189,43 @@ $ pip install -r requirements.txt
 $ python riminder/test.py
 ```
 
+# Help
+
+* Here an example on how to get help:
+
+ ```sh
+    >>> from riminder import Riminder
+    >>> from riminder.profile import Profile
+    >>> help(Profile.update_rating)
+
+    Help on function update_rating in module riminder.profile:
+
+    update_rating(self, source_id=None, profile_id=None, job_id=None, rating=None)
+    Edit the profile rating given a job
+    
+    Args:
+        profile_id:             <string>
+                                profile id
+    body params:
+        source_id:              <string>
+                                source id associated to the profile
+        
+        job_id:                 <string>
+                                job id
+        rating:                 <int32>
+                                profile rating from 1 to 4 associated to the job.
+    
+    Returns:
+        Response that contains code 201 if successful
+        Other status codes otherwise.
+(END)
+
+```
+
+* More help ? see  [Riminder API Docs](https://developers.riminder.net/v1.0/reference#authentication)
+
 # Todo
 
+* Finishing docstrings
 * All test must pass
 * Adding webhooks
