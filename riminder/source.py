@@ -12,13 +12,12 @@ class Source(object):
     def get_all(self):
         response = self.client.get("sources")
         return response.json()
-    
+
     def get_by_id(self, source_id=None):
         query_params = {}
         query_params["source_id"] = self._validate_source_id(source_id)
-        resource_endpoint = "source/{}".format(self._validate_source_id(source_id))
 
-        response = self.client.get(resource_endpoint, query_params)
+        response = self.client.get('source', query_params)
         return response.json()
 
     def _validate_source_id(self, value):
