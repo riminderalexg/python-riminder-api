@@ -128,9 +128,9 @@ class Profile(object):
         """
         query_params = {}
         query_params["source_id"] = self._validate_source_id(source_id)
-        resource_endpoint = "profile/{}".format(self._validate_profile_id(profile_id))
+        query_params["profile_id"] = self._validate_profile_id(profile_id)
 
-        response = self.client.get(resource_endpoint, query_params)
+        response = self.client.get('profile', query_params)
         return response.json()
 
     def get_documents(self, source_id=None, profile_id=None):
@@ -148,14 +148,14 @@ class Profile(object):
         """
         query_params = {}
         query_params["source_id"] = self._validate_source_id(source_id)
-        resource_endpoint = "profile/{}/documents".format(self._validate_profile_id(profile_id))
+        query_params["profile_id"] = self._validate_profile_id(profile_id)
 
-        response = self.client.get(resource_endpoint, query_params)
+        response = self.client.get('profile/documents', query_params)
         return response.json()
 
-    def get_extractions(self, source_id=None, profile_id=None):
+    def get_parsing(self, source_id=None, profile_id=None):
         """
-        Retrieve the profile career's path associated with profile id
+        Retrieve the parsing information
 
         Args:
             source_id:              <string>
@@ -164,34 +164,34 @@ class Profile(object):
                                     profile id
 
         Returns:
-            response see: https://developers.riminder.net/v1.0/reference#profileidextractions
+            parsing information
         """
         query_params = {}
         query_params["source_id"] = self._validate_source_id(source_id)
-        resource_endpoint = "profile/{}/extractions".format(self._validate_profile_id(profile_id))
+        query_params["profile_id"] = self._validate_profile_id(profile_id)
 
-        response = self.client.get(resource_endpoint, query_params)
+        response = self.client.get('profile/parsing', query_params)
         return response.json()
 
-    def get_jobs(self, source_id=None, profile_id=None):
-        """
-        Retrieve the profile assessments associated with profile id
+        def get_scoring(self, source_id=None, profile_id=None):
+            """
+            Retrieve the scoring information
 
-        Args:
-            source_id:              <string>
-                                    source id
-            profile_id:             <string>
-                                    profile id
+            Args:
+                source_id:              <string>
+                                        source id
+                profile_id:             <string>
+                                        profile id
 
-        Returns:
-            response see: https://developers.riminder.net/v1.0/reference#profileidjobs
-        """
-        query_params = {}
-        query_params["source_id"] = self._validate_source_id(source_id)
-        resource_endpoint = "profile/{}/jobs".format(self._validate_profile_id(profile_id))
+            Returns:
+                parsing information
+            """
+            query_params = {}
+            query_params["source_id"] = self._validate_source_id(source_id)
+            query_params["profile_id"] = self._validate_profile_id(profile_id)
 
-        response = self.client.get(resource_endpoint, query_params)
-        return response.json()
+            response = self.client.get('profile/scoring', query_params)
+            return response.json()
 
     def update_stage(self, source_id=None, profile_id=None, job_id=None, stage=None):
         """
@@ -203,7 +203,7 @@ class Profile(object):
         body params:
             source_id:              <string>
                                     source id associated to the profile
-            
+
             job_id:                 <string>
                                     job id
             stage:                 <string>
@@ -215,11 +215,11 @@ class Profile(object):
         """
         data = {}
         data["source_id"] = self._validate_source_id(source_id)
+        data["profile_id"] = self._validate_profile_id(profile_id)
         data["job_id"] = self._validate_job_id(job_id)
         data["stage"] = self._validate_stage(stage)
-        resource_endpoint = "profile/{}/stage".format(self._validate_profile_id(profile_id))
 
-        response = self.client.patch(resource_endpoint, data=data)
+        response = self.client.patch('profile/stage', data=data)
         return response.json()
 
     def update_rating(self, source_id=None, profile_id=None, job_id=None, rating=None):
@@ -232,7 +232,7 @@ class Profile(object):
         body params:
             source_id:              <string>
                                     source id associated to the profile
-            
+
             job_id:                 <string>
                                     job id
             rating:                 <int32>
@@ -244,11 +244,11 @@ class Profile(object):
         """
         data = {}
         data["source_id"] = self._validate_source_id(source_id)
+        data["profile_id"] = self._validate_profile_id(profile_id)
         data["job_id"] = self._validate_job_id(job_id)
         data["rating"] = self._validate_rating(rating)
-        resource_endpoint = "profile/{}/rating".format(self._validate_profile_id(profile_id))
 
-        response = self.client.patch(resource_endpoint, data=data)
+        response = self.client.patch('profile/rating', data=data)
         return response.json()
 
     def _get_file(self, file_path, profile_reference):
