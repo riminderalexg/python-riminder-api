@@ -15,8 +15,10 @@ class Filter(object):
 
     def get_by_id(self, filter_id=None, filter_reference=None):
         query_params = {}
-        query_params["filter_id"] = self._validate_id(filter_id, 'filter_id')
-        query_params["filter_reference"] = self._validate_id(filter_reference, 'filter_reference')
+        if filter_id:
+            query_params["filter_id"] = self._validate_id(filter_id, 'filter_id')
+        if filter_reference:
+            query_params["filter_reference"] = self._validate_id(filter_reference, 'filter_reference')
 
         response = self.client.get('filter', query_params)
         return response.json()

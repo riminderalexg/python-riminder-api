@@ -47,8 +47,8 @@ class Profile(object):
         self.client = client
 
     def get_all(self, source_ids=None, seniority="all", stage=None,
-                date_start="1494539999", date_end="1502488799", job_id=None,
-                page=1, limit=30, sort_by=None):
+                date_start="1494539999", date_end="1502488799", filter_id=None,
+                page=1, limit=30, sort_by=None, filter_reference=None, order_by=None):
         """
         Retreive all profiles that match the query param
 
@@ -57,7 +57,7 @@ class Profile(object):
                         profiles' last date of reception
             date_start: <string> REQUIRED (default to "1494539999")
                         profiles' first date of reception
-            job_id:     <string>
+            filter_id:     <string>
             limit:      <int> (default to 30)
                         number of fetched profiles/page
             page:       <int> REQUIRED default to 1
@@ -74,19 +74,23 @@ class Profile(object):
         query_params = {}
         query_params["date_end"] = self._validate_date_end(date_end)
         query_params["date_start"] = self._validate_date_start(date_start)
-        query_params["job_id"] = self._validate_job_id(job_id)
+        if filter_id:
+            query_params["filter_id"] = self._validate_filter_id(filter_id)
+        if filter_reference:
+            query_params["filter_reference"] = self._validate_filter_reference(filter_reference)
         query_params["limit"] = self._validate_limit(limit)
         query_params["page"] = self._validate_page(page)
         query_params["seniority"] = self._validate_seniority(seniority)
         query_params["sort_by"] = self._validate_sort_by(sort_by)
         query_params["source_ids"] = self._validate_source_ids(source_ids)
         query_params["stage"] = self._validate_stage(stage)
+        query_params["order_by"] = order_by
 
         response = self.client.get("profiles", query_params)
         return response.json()
 
     def create_profile(self, source_id=None, file_path=None, profile_reference="",
-                       timestamp_reception=None):
+                       timestamp_reception=None, training_metadata=None):
         """
         Add a profile resume to a sourced id
 
@@ -108,12 +112,13 @@ class Profile(object):
         data["source_id"] = self._validate_source_id(source_id)
         data["profile_reference"] = self._validate_profile_reference(profile_reference)
         data["timestamp_reception"] = self._validate_timestamp_reception(timestamp_reception)
+        data["training_metadata"] = training_metadata
         files = self._get_file(file_path, profile_reference)
 
         response = self.client.post("profile", data=data, files={"file": files})
         return response.json()
 
-    def get_by_id(self, source_id=None, profile_id=None):
+    def get_by_id(self, source_id=None, profile_id=None, profile_reference=None):
         """
         Retrieve the profile information associated with profile id
 
@@ -128,12 +133,14 @@ class Profile(object):
         """
         query_params = {}
         query_params["source_id"] = self._validate_source_id(source_id)
-        query_params["profile_id"] = self._validate_profile_id(profile_id)
-
+        if profile_id:
+            query_params["profile_id"] = self._validate_profile_id(profile_id)
+        if profile_reference:
+            query_params["profile_reference"] = self._validate_profile_reference(profile_reference)
         response = self.client.get('profile', query_params)
         return response.json()
 
-    def get_documents(self, source_id=None, profile_id=None):
+    def get_documents(self, source_id=None, profile_id=None, profile_reference=None):
         """
         Retrieve the file information
 
@@ -148,12 +155,14 @@ class Profile(object):
         """
         query_params = {}
         query_params["source_id"] = self._validate_source_id(source_id)
-        query_params["profile_id"] = self._validate_profile_id(profile_id)
-
+        if profile_id:
+            query_params["profile_id"] = self._validate_profile_id(profile_id)
+        if profile_reference:
+            query_params["profile_reference"] = self._validate_profile_reference(profile_reference)
         response = self.client.get('profile/documents', query_params)
         return response.json()
 
-    def get_parsing(self, source_id=None, profile_id=None):
+    def get_parsing(self, source_id=None, profile_id=None, profile_reference=None):
         """
         Retrieve the parsing information
 
@@ -168,12 +177,14 @@ class Profile(object):
         """
         query_params = {}
         query_params["source_id"] = self._validate_source_id(source_id)
-        query_params["profile_id"] = self._validate_profile_id(profile_id)
-
+        if profile_id:
+            query_params["profile_id"] = self._validate_profile_id(profile_id)
+        if profile_reference:
+            query_params["profile_reference"] = self._validate_profile_reference(profile_reference)
         response = self.client.get('profile/parsing', query_params)
         return response.json()
 
-        def get_scoring(self, source_id=None, profile_id=None):
+        def get_scoring(self, source_id=None, profile_id=None, profile_reference=None):
             """
             Retrieve the scoring information
 
@@ -188,14 +199,16 @@ class Profile(object):
             """
             query_params = {}
             query_params["source_id"] = self._validate_source_id(source_id)
-            query_params["profile_id"] = self._validate_profile_id(profile_id)
-
+            if profile_id:
+                query_params["profile_id"] = self._validate_profile_id(profile_id)
+            if profile_reference:
+                query_params["profile_reference"] = self._validate_profile_reference(profile_reference)
             response = self.client.get('profile/scoring', query_params)
             return response.json()
 
-    def update_stage(self, source_id=None, profile_id=None, job_id=None, stage=None):
+    def update_stage(self, source_id=None, profile_id=None, filter_id=None, stage=None, profile_reference=None, filter_reference=None):
         """
-        Edit the profile stage given a job
+        Edit the profile stage given a filter
 
         Args:
             profile_id:             <string>
@@ -204,10 +217,10 @@ class Profile(object):
             source_id:              <string>
                                     source id associated to the profile
 
-            job_id:                 <string>
-                                    job id
+            filter_id:                 <string>
+                                    filter id
             stage:                 <string>
-                                    profiles' stage associated to the job ( null for all, NEW, YES, LATER or NO).
+                                    profiles' stage associated to the filter ( null for all, NEW, YES, LATER or NO).
 
         Returns:
             Response that contains code 201 if successful
@@ -215,16 +228,22 @@ class Profile(object):
         """
         data = {}
         data["source_id"] = self._validate_source_id(source_id)
-        data["profile_id"] = self._validate_profile_id(profile_id)
-        data["job_id"] = self._validate_job_id(job_id)
+        if profile_id:
+            data["profile_id"] = self._validate_profile_id(profile_id)
+        if filter_id:
+            data["filter_id"] = self._validate_filter_id(filter_id)
+        if profile_reference:
+            data["profile_reference"] = self._validate_profile_reference(profile_reference)
+        if filter_id:
+            data["filter_reference"] = self._validate_filter_reference(filter_reference)
         data["stage"] = self._validate_stage(stage)
 
         response = self.client.patch('profile/stage', data=data)
         return response.json()
 
-    def update_rating(self, source_id=None, profile_id=None, job_id=None, rating=None):
+    def update_rating(self, source_id=None, profile_id=None, filter_id=None, rating=None, profile_reference=None, filter_reference=None):
         """
-        Edit the profile rating given a job
+        Edit the profile rating given a filter
 
         Args:
             profile_id:             <string>
@@ -233,10 +252,10 @@ class Profile(object):
             source_id:              <string>
                                     source id associated to the profile
 
-            job_id:                 <string>
-                                    job id
+            filter_id:                 <string>
+                                    filter id
             rating:                 <int32>
-                                    profile rating from 1 to 4 associated to the job.
+                                    profile rating from 1 to 4 associated to the filter.
 
         Returns:
             Response that contains code 201 if successful
@@ -244,8 +263,14 @@ class Profile(object):
         """
         data = {}
         data["source_id"] = self._validate_source_id(source_id)
-        data["profile_id"] = self._validate_profile_id(profile_id)
-        data["job_id"] = self._validate_job_id(job_id)
+        if profile_id:
+            data["profile_id"] = self._validate_profile_id(profile_id)
+        if filter_id:
+            data["filter_id"] = self._validate_filter_id(filter_id)
+        if profile_reference:
+            data["profile_reference"] = self._validate_profile_reference(profile_reference)
+        if filter_id:
+            data["filter_reference"] = self._validate_filter_reference(filter_reference)
         data["rating"] = self._validate_rating(rating)
 
         response = self.client.patch('profile/rating', data=data)
@@ -307,9 +332,21 @@ class Profile(object):
 
         return value
 
-    def _validate_job_id(self, value):
+    def _validate_filter_id(self, value):
         if not isinstance(value, str) and value is not None:
-            raise TypeError("job_id must be string")
+            raise TypeError("filter_id must be string")
+
+        return value
+
+    def _validate_filter_reference(self, value):
+        if not isinstance(value, str) and value is not None:
+            raise TypeError("filter_reference must be string")
+
+        return value
+
+    def _validate_profile_reference(self, value):
+        if not isinstance(value, str) and value is not None:
+            raise TypeError("profile_reference must be string")
 
         return value
 

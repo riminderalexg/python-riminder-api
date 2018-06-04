@@ -10,7 +10,7 @@ $ pip install riminder
 
 # Usage
 
-Example Source 
+Example Source
 
 ```sh
     >>> from riminder import Riminder
@@ -29,10 +29,10 @@ Example Source
         "type": "api",
         "archive": false
         ...
-                
+
 ```
 
-Example Profile 
+Example Profile
 
 ```sh
     >>> from riminder import Riminder
@@ -55,22 +55,22 @@ Example Profile
                 ...
 
 ```
-Example Job 
+Example Filter
 
 ```sh
     >>> from riminder import Riminder
-    >>> from riminder.job import Job
+    >>> from riminder.filter import Filter
     >>> client = Riminder(api_key="YOUR_API_KEY")
-    >>> job = Job(self.client)
-    >>> result = job.get_all()
+    >>> filter = Filter(self.client)
+    >>> result = filter.get_all()
     >>> print(result)
     {
         "code": 200,
         "message": "ok",
         "data": [
             {
-            "job_id": "7c94e981cd23d16f5c549eea21a7554db0c927a7",
-            "job_reference": "1248593",
+            "filter_id": "7c94e981cd23d16f5c549eea21a7554db0c927a7",
+            "filter_reference": "1248593",
             "name": "Talent Acquisition Specialist",
             "archive": false,
             "date_creation": {
@@ -78,7 +78,7 @@ Example Job
                 "timezone_type": 3,
                 "timezone": "Europe/Paris"
             ...
-                
+
 ```
 
 # API
@@ -89,56 +89,56 @@ Example Job
 Retreive all profiles that match the query param, only source_ids are required
 
 ```
-    profile.get_all(source_ids, seniority, stage, date_start, date_end, job_id, page, limit, sort_by)
+    profile.get_all(source_ids, seniority, stage, date_start, date_end, filter_id, page, limit, sort_by, filter_reference, order_by)
 ```
 
 * create_profile().
 Add a profile resume to a sourced id
 
 ```
-    profile.create_profile(source_id, file_path, profile_reference, timestamp_reception)
+    profile.create_profile(source_id, file_path, profile_reference, timestamp_reception, training_metadata)
 ```
 
 * get_by_id().
 Retrieve the profile information associated with profile id, source_id and profile_id are required
 
 ```
-    profile.get_by_id(source_id, profile_id)
+    profile.get_by_id(source_id, profile_id, profile_reference)
 ```
 
 * get_documents().
 Retrieve the profile information associated with profile id, source_id and profile_id are required
 
 ```
-    profile.get_documents(source_id, profile_id)
+    profile.get_documents(source_id, profile_id, profile_reference)
 ```
 
-* get_extractions().
-Retrieve the profile career's path associated with profile id, source_id and profile_id are required
+* get_parsing().
+Retrieve the profile parsing data path associated with profile id, source_id and profile_id are required
 
 ```
-    profile.get_extractions(source_id, profile_id)
+    profile.get_extractions(source_id, profile_id, profile_reference)
 ```
 
-* get_extractions().
-Retrieve the profile assessments associated with profile id, source_id and profile_id are required
+* get_scoring().
+Retrieve the profile scoring associated with profile id, source_id and profile_id are required
 
 ```
-    profile.get_jobs(source_id, profile_id)
+    profile.get_filters(source_id, profile_id)
 ```
 
 * update_stage().
-Edit the profile stage given a job, source_id, profile_id and job_id are required
+Edit the profile stage given a filter, source_id, profile_id and filter_id are required
 
 ```
-    profile.update_stage(source_id, profile_id, job_id, stage)
+    profile.update_stage(source_id, profile_id, filter_id, stage, profile_reference, filter_reference)
 ```
 
 * update_rating.
-Edit the profile rating given a job, all params are required
+Edit the profile rating given a filter, all params are required
 
 ```
-    profile.update_rating(source_id, profile_id, job_id, rating)
+    profile.update_rating(source_id, profile_id, filter_id, rating, profile_reference, filter_reference)
 ```
 
 
@@ -158,20 +158,20 @@ Retrieve the source information associated with source id (required)
     source.get_by_id(source_id)
 ```
 
-## job
+## filter
 
 * get_all().
-Retrieve all jobs for given team account
+Retrieve all filters for given team account
 
 ```
-    job.get_all()
+    filter.get_all()
 ```
 
 * get_by_id().
-Retrieve the job information associated with the job_id (required)
+Retrieve the filter information associated with the filter_id (required)
 
 ```
-    job.get_by_id(job_id)
+    filter.get_by_id(filter_id, filter_reference)
 ```
 
 
@@ -200,21 +200,21 @@ $ python riminder/test.py
 
     Help on function update_rating in module riminder.profile:
 
-    update_rating(self, source_id=None, profile_id=None, job_id=None, rating=None)
-    Edit the profile rating given a job
-    
+    update_rating(self, source_id=None, profile_id=None, filter_id=None, rating=None)
+    Edit the profile rating given a filter
+
     Args:
         profile_id:             <string>
                                 profile id
     body params:
         source_id:              <string>
                                 source id associated to the profile
-        
-        job_id:                 <string>
-                                job id
+
+        filter_id:                 <string>
+                                filter id
         rating:                 <int32>
-                                profile rating from 1 to 4 associated to the job.
-    
+                                profile rating from 1 to 4 associated to the filter.
+
     Returns:
         Response that contains code 201 if successful
         Other status codes otherwise.
