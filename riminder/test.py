@@ -46,7 +46,6 @@ class TestProfile(unittest.TestCase):
             source_id="5823bc959983f7a5925a5356020e60d605e8c9b5",
             profile_id="5d20da1c2d7bb0a6956764a8b0b61c0371540ce6",
         )
-
         self.assertEqual(res["code"], 200)
 
     def test_get_documents(self):
@@ -57,16 +56,16 @@ class TestProfile(unittest.TestCase):
 
         self.assertEqual(res["code"], 200)
 
-    def test_get_extractions(self):
-        res = self.profile.get_extractions(
+    def test_get_parsing(self):
+        res = self.profile.get_parsing(
             source_id="5823bc959983f7a5925a5356020e60d605e8c9b5",
             profile_id="5d20da1c2d7bb0a6956764a8b0b61c0371540ce6",
         )
 
         self.assertEqual(res["code"], 200)
 
-    def test_get_filters(self):
-        res = self.profile.get_filters(
+    def test_get_scoring(self):
+        res = self.profile.get_scoring(
             source_id="5823bc959983f7a5925a5356020e60d605e8c9b5",
             profile_id="5d20da1c2d7bb0a6956764a8b0b61c0371540ce6",
         )
