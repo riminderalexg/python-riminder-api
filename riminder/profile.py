@@ -184,27 +184,27 @@ class Profile(object):
         response = self.client.get('profile/parsing', query_params)
         return response.json()
 
-        def get_scoring(self, source_id=None, profile_id=None, profile_reference=None):
-            """
-            Retrieve the scoring information
+    def get_scoring(self, source_id=None, profile_id=None, profile_reference=None):
+        """
+        Retrieve the scoring information
 
-            Args:
-                source_id:              <string>
-                                        source id
-                profile_id:             <string>
-                                        profile id
+        Args:
+            source_id:              <string>
+                                    source id
+            profile_id:             <string>
+                                    profile id
 
-            Returns:
-                parsing information
-            """
-            query_params = {}
-            query_params["source_id"] = self._validate_source_id(source_id)
-            if profile_id:
-                query_params["profile_id"] = self._validate_profile_id(profile_id)
-            if profile_reference:
-                query_params["profile_reference"] = self._validate_profile_reference(profile_reference)
-            response = self.client.get('profile/scoring', query_params)
-            return response.json()
+        Returns:
+            parsing information
+        """
+        query_params = {}
+        query_params["source_id"] = self._validate_source_id(source_id)
+        if profile_id:
+            query_params["profile_id"] = self._validate_profile_id(profile_id)
+        if profile_reference:
+            query_params["profile_reference"] = self._validate_profile_reference(profile_reference)
+        response = self.client.get('profile/scoring', query_params)
+        return response.json()
 
     def update_stage(self, source_id=None, profile_id=None, filter_id=None, stage=None, profile_reference=None, filter_reference=None):
         """
