@@ -1,6 +1,7 @@
 from riminder import Riminder
 import magic
 import os
+import json
 
 SERNIORITY_VALUES = ["all", "senior", "junior"]
 STAGE_VALUES = [None, "NEW", "YES", "LATER", "NO"]
@@ -82,7 +83,7 @@ class Profile(object):
         query_params["page"] = self._validate_page(page)
         query_params["seniority"] = self._validate_seniority(seniority)
         query_params["sort_by"] = self._validate_sort_by(sort_by)
-        query_params["source_ids"] = self._validate_source_ids(source_ids)
+        query_params["source_ids"] = json.dumps(self._validate_source_ids(source_ids))
         query_params["stage"] = self._validate_stage(stage)
         query_params["order_by"] = order_by
 
