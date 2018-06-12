@@ -101,6 +101,17 @@ Add a profile resume to a sourced id
     profile.create_profile(source_id, file_path, profile_reference, timestamp_reception, training_metadata)
 ```
 
+* create_profile().
+Add a profile resume to a sourced id
+
+```python
+    profile.create_profiles(source_id, file_path, is_recurcive, timestamp_reception, training_metadata)
+```
+It returns a dictionary with 'success' an 'fail' in it:
+  * ||
+   * success: key: file_path - value: response from server
+   * fail   : key: file_path - value: exception that occurs
+
 * get_by_id().
 Retrieve the profile information associated with profile id, source_id and profile_id are required
 

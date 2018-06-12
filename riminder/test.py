@@ -16,7 +16,7 @@ class TestHelper:
         self.stage = 'NEW'
         self.source_type = 'api'
         # if source_name is empty no name is selected
-        self.source_name = ['']
+        self.source_name = []
 
     def getKey(self):
         return self.api_key
@@ -96,6 +96,11 @@ class TestProfile(unittest.TestCase):
         )
         self.assertEqual(res["code"], 201)
 
+    def test_create_profiles(self):
+        dir_path = "riminder/test_assets"
+        res = self.profile.create_profiles(source_id=self.helper.add_source_id, dir_path=dir_path)
+        self.assertEqual(len(res['success']), 1)
+
     def test_get_one_profile(self):
         res = self.profile.get_by_id(
             source_id=self.helper.source_id,
@@ -134,7 +139,6 @@ class TestProfile(unittest.TestCase):
             filter_id=self.helper.filter_id,
             stage=self.helper.stage,
         )
-        print(res)
         self.assertEqual(res["code"], 200)
 
     def test_update_rating(self):
