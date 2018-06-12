@@ -5,7 +5,7 @@ import json
 
 SERNIORITY_VALUES = ["all", "senior", "junior"]
 STAGE_VALUES = [None, "NEW", "YES", "LATER", "NO"]
-SORT_BY_VALUES = [None, "CREATION", "DESC", "RECEPTION", "RANKING"]
+SORT_BY_VALUES = [None, "creation", "DESC", "reception", "ranking"]
 
 
 class Profile(object):
@@ -49,7 +49,7 @@ class Profile(object):
 
     def get_all(self, source_ids=None, seniority="all", stage=None,
                 date_start="1494539999", date_end="1502488799", filter_id=None,
-                page=1, limit=30, sort_by=None, filter_reference=None, order_by=None):
+                page=1, limit=30, sort_by='ranking', filter_reference=None, order_by=None):
         """
         Retreive all profiles that match the query param
 

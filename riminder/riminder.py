@@ -35,4 +35,4 @@ class Riminder(object):
 
     def patch(self, resource_endpoint, data={}):
         url = self._create_request_url(resource_endpoint)
-        return req.patch(url, headers=self.auth_header, data=data)
+        return req.patch(url, headers=self.auth_header, json=data)
