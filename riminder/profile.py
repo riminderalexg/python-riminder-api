@@ -1,10 +1,16 @@
 from riminder import Riminder
+import time
 import magic
 import os
+import os.path as path
+import json
 
 SERNIORITY_VALUES = ["all", "senior", "junior"]
 STAGE_VALUES = [None, "NEW", "YES", "LATER", "NO"]
-SORT_BY_VALUES = [None, "CREATION", "DESC", "RECEPTION", "RANKING"]
+SORT_BY_VALUES = [None, "creation", "DESC", "reception", "ranking"]
+VALID_EXTENSIONS = ['.pdf', '.png', '.jpg', '.doc', '.docx', '.rtf', '.dotx']
+INVALID_FILENAME = ['.', '..']
+TIMESTAMP_NOW = str(time.time())
 
 
 class Profile(object):
@@ -47,8 +53,8 @@ class Profile(object):
         self.client = client
 
     def get_all(self, source_ids=None, seniority="all", stage=None,
-                date_start="1494539999", date_end="1502488799", filter_id=None,
-                page=1, limit=30, sort_by=None, filter_reference=None, order_by=None):
+                date_start="1494539999", date_end=TIMESTAMP_NOW, filter_id=None,
+                page=1, limit=30, sort_by='ranking', filter_reference=None, order_by=None):
         """
         Retreive all profiles that match the query param
 
@@ -82,7 +88,7 @@ class Profile(object):
         query_params["page"] = self._validate_page(page)
         query_params["seniority"] = self._validate_seniority(seniority)
         query_params["sort_by"] = self._validate_sort_by(sort_by)
-        query_params["source_ids"] = self._validate_source_ids(source_ids)
+        query_params["source_ids"] = json.dumps(self._validate_source_ids(source_ids))
         query_params["stage"] = self._validate_stage(stage)
         query_params["order_by"] = order_by
 
@@ -117,6 +123,29 @@ class Profile(object):
 
         response = self.client.post("profile", data=data, files={"file": files})
         return response.json()
+
+    def create_profiles(self, source_id, dir_path, is_recurcive=False, timestamp_reception=None, training_metadata=None):
+        if not path.isdir(dir_path):
+            raise ValueError(dir_path + ' is not a directory')
+        files_to_send = self._get_files_from_dir(dir_path, is_recurcive)
+        succeed_upload = {}
+        failed_upload = {}
+        for file_path in files_to_send:
+            try:
+                resp = self.create_profile(source_id=source_id,
+                    file_path=file_path, profile_reference="",
+                    timestamp_reception=timestamp_reception, training_metadata=training_metadata)
+                if resp['code'] != 200 and resp['code'] != 201:
+                    failed_upload[file_path] = ValueError('Invalid response: ' + str(resp))
+                else:
+                    succeed_upload[file_path] = resp
+            except BaseException as e:
+                failed_upload[file_path] = e
+        result = {
+            'success': succeed_upload,
+            'fail': failed_upload
+        }
+        return result
 
     def get_by_id(self, source_id=None, profile_id=None, profile_reference=None):
         """
@@ -269,7 +298,7 @@ class Profile(object):
             data["filter_id"] = self._validate_filter_id(filter_id)
         if profile_reference:
             data["profile_reference"] = self._validate_profile_reference(profile_reference)
-        if filter_id:
+        if filter_reference:
             data["filter_reference"] = self._validate_filter_reference(filter_reference)
         data["rating"] = self._validate_rating(rating)
 
@@ -385,3 +414,27 @@ class Profile(object):
             raise TypeError("timestamp_reception must be string")
 
         return value
+
+    def _is_valid_extension(self, file_path):
+        ext = path.splitext(file_path)[1]
+        if not ext:
+            return False
+        return ext in VALID_EXTENSIONS
+
+    def _is_valid_filename(self, file_path):
+        name = path.basename(file_path)
+        return name not in INVALID_FILENAME
+
+    def _get_files_from_dir(self, dir_path, is_recurcive):
+        file_res = []
+        files_path = os.listdir(dir_path)
+
+        for file_path in files_path:
+            true_path = path.join(dir_path, file_path)
+            if path.isdir(true_path) and is_recurcive:
+                if self._is_valid_filename(true_path):
+                    file_res += self._get_files_from_dir(true_path, is_recurcive)
+                continue
+            if self._is_valid_extension(true_path):
+                file_res.append(true_path)
+        return file_res

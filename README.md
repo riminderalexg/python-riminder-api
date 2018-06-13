@@ -83,61 +83,74 @@ Example Filter
 
 # API
 
+For any methods that needs `*_id` and `*_reference`
+you need to provide at least one of them but not necessarily both.
 ## Profile
 
 * get_all().
 Retreive all profiles that match the query param, only source_ids are required
 
-```
+```python
     profile.get_all(source_ids, seniority, stage, date_start, date_end, filter_id, page, limit, sort_by, filter_reference, order_by)
 ```
 
 * create_profile().
 Add a profile resume to a sourced id
 
-```
+```python
     profile.create_profile(source_id, file_path, profile_reference, timestamp_reception, training_metadata)
 ```
+
+* create_profile().
+Add a profile resume to a sourced id
+
+```python
+    profile.create_profiles(source_id, file_path, is_recurcive, timestamp_reception, training_metadata)
+```
+It returns a dictionary with 'success' an 'fail' in it:
+  * ||
+   * success: key: file_path - value: response from server
+   * fail   : key: file_path - value: exception that occurs
 
 * get_by_id().
 Retrieve the profile information associated with profile id, source_id and profile_id are required
 
-```
+```python
     profile.get_by_id(source_id, profile_id, profile_reference)
 ```
 
 * get_documents().
 Retrieve the profile information associated with profile id, source_id and profile_id are required
 
-```
+```python
     profile.get_documents(source_id, profile_id, profile_reference)
 ```
 
 * get_parsing().
 Retrieve the profile parsing data path associated with profile id, source_id and profile_id are required
 
-```
+```python
     profile.get_extractions(source_id, profile_id, profile_reference)
 ```
 
 * get_scoring().
 Retrieve the profile scoring associated with profile id, source_id and profile_id are required
 
-```
+```python
     profile.get_filters(source_id, profile_id)
 ```
 
 * update_stage().
 Edit the profile stage given a filter, source_id, profile_id and filter_id are required
 
-```
+```python
     profile.update_stage(source_id, profile_id, filter_id, stage, profile_reference, filter_reference)
 ```
 
 * update_rating.
 Edit the profile rating given a filter, all params are required
 
-```
+```python
     profile.update_rating(source_id, profile_id, filter_id, rating, profile_reference, filter_reference)
 ```
 
@@ -147,14 +160,14 @@ Edit the profile rating given a filter, all params are required
 * get_all().
 get all sources
 
-```
+```python
     source.get_all()
 ```
 
 * get_by_id().
 Retrieve the source information associated with source id (required)
 
-```
+```python
     source.get_by_id(source_id)
 ```
 
@@ -163,14 +176,14 @@ Retrieve the source information associated with source id (required)
 * get_all().
 Retrieve all filters for given team account
 
-```
+```python
     filter.get_all()
 ```
 
 * get_by_id().
 Retrieve the filter information associated with the filter_id (required)
 
-```
+```python
     filter.get_by_id(filter_id, filter_reference)
 ```
 
