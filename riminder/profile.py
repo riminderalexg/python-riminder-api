@@ -1,4 +1,5 @@
 from riminder import Riminder
+import time
 import magic
 import os
 import os.path as path
@@ -9,6 +10,7 @@ STAGE_VALUES = [None, "NEW", "YES", "LATER", "NO"]
 SORT_BY_VALUES = [None, "creation", "DESC", "reception", "ranking"]
 VALID_EXTENSIONS = ['.pdf', '.png', '.jpg', '.doc', '.docx', '.rtf', '.dotx']
 INVALID_FILENAME = ['.', '..']
+TIMESTAMP_NOW = str(time.time())
 
 
 class Profile(object):
@@ -51,7 +53,7 @@ class Profile(object):
         self.client = client
 
     def get_all(self, source_ids=None, seniority="all", stage=None,
-                date_start="1494539999", date_end="1502488799", filter_id=None,
+                date_start="1494539999", date_end=TIMESTAMP_NOW, filter_id=None,
                 page=1, limit=30, sort_by='ranking', filter_reference=None, order_by=None):
         """
         Retreive all profiles that match the query param
@@ -296,7 +298,7 @@ class Profile(object):
             data["filter_id"] = self._validate_filter_id(filter_id)
         if profile_reference:
             data["profile_reference"] = self._validate_profile_reference(profile_reference)
-        if filter_id:
+        if filter_reference:
             data["filter_reference"] = self._validate_filter_reference(filter_reference)
         data["rating"] = self._validate_rating(rating)
 
