@@ -101,7 +101,7 @@ class TestProfile(unittest.TestCase):
             self.assertEqual(profile["seniority"], "junior")
 
     def test_create_profile(self):
-        file_path = "riminder/test_assets/file.pdf"
+        file_path = "riminder/test_assets/cv_test5.pdf"
         res = self.profile.create_profile(
             source_id=self.helper.add_source_id,
             file_path=file_path,
@@ -110,8 +110,8 @@ class TestProfile(unittest.TestCase):
 
     def test_create_profiles(self):
         dir_path = "riminder/test_assets"
-        res = self.profile.create_profiles(source_id=self.helper.add_source_id, dir_path=dir_path)
-        self.assertEqual(len(res['success']), 1)
+        res = self.profile.create_profiles(source_id=self.helper.add_source_id, dir_path=dir_path, is_recurcive=True)
+        self.assertEqual(len(res['success']), 2)
 
     def test_get_one_profile(self):
         res = self.profile.get_by_id(
