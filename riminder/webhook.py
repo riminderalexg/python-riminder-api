@@ -79,7 +79,7 @@ class Webhook(object):
         return hmac.compare_digest(exp_sign_digest, signature)
 
     def _decode_request(self, encoded_request):
-        tmp = encoded_request.split('.', limit=2)
+        tmp = encoded_request.split('.', 2)
         if len(tmp) < 2:
             raise ValueError("Error invalid request. Maybe it's not the 'HTTP_RIMINDER_SIGNATURE' field")
         encoded_sign = tmp[0]
