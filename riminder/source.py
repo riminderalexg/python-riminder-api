@@ -9,11 +9,11 @@ class Source(object):
 
         self.client = client
 
-    def get_all(self):
+    def get_sources(self):
         response = self.client.get("sources")
         return response.json()
 
-    def get_by_id(self, source_id=None):
+    def get_source(self, source_id=None):
         query_params = {}
         query_params["source_id"] = self._validate_source_id(source_id)
 

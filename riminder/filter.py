@@ -9,11 +9,11 @@ class Filter(object):
 
         self.client = client
 
-    def get_all(self):
+    def get_filters(self):
         response = self.client.get("filters")
         return response.json()
 
-    def get_by_id(self, filter_id=None, filter_reference=None):
+    def get_filter(self, filter_id=None, filter_reference=None):
         query_params = {}
         if filter_id:
             query_params["filter_id"] = self._validate_id(filter_id, 'filter_id')

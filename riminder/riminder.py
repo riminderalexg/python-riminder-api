@@ -7,10 +7,11 @@ RIMINDER_API_URL = "https://www.riminder.net/sf/public/api/v1.0/"
 
 class Riminder(object):
 
-    def __init__(self, api_key):
+    def __init__(self, api_key, webhook_secret=None):
         self.auth_header = {
             "X-API-Key": api_key
         }
+        self.webhook_secret = webhook_secret
 
     def _create_request_url(self, resource_url):
         return "{api_endpoint}{resource_url}".format(

@@ -22,7 +22,7 @@ class Profile(object):
     >>> from riminder.profile import Profile
     >>> client = Riminder(api_key="YOUR_API_KEY")
     >>> profile = Profile(self.client)
-    >>> result = profile.get_all(source_ids=["5823bc959983f7a5925a5356020e60d605e8c9b5"])
+    >>> result = profile.get_profiles(source_ids=["5823bc959983f7a5925a5356020e60d605e8c9b5"])
     >>> print(result)
     {
         "code": 200,
@@ -52,7 +52,7 @@ class Profile(object):
 
         self.client = client
 
-    def get_all(self, source_ids=None, seniority="all", stage=None,
+    def get_profiles(self, source_ids=None, seniority="all", stage=None,
                 date_start="1494539999", date_end=TIMESTAMP_NOW, filter_id=None,
                 page=1, limit=30, sort_by='ranking', filter_reference=None, order_by=None):
         """
@@ -95,8 +95,8 @@ class Profile(object):
         response = self.client.get("profiles", query_params)
         return response.json()
 
-    def create_profile(self, source_id=None, file_path=None, profile_reference="",
-                       timestamp_reception=None, training_metadata=None):
+    def post_profile(self, source_id=None, file_path=None, profile_reference="",
+                     timestamp_reception=None, training_metadata=None):
         """
         Add a profile resume to a sourced id
 
@@ -124,7 +124,7 @@ class Profile(object):
         response = self.client.post("profile", data=data, files={"file": files})
         return response.json()
 
-    def create_profiles(self, source_id, dir_path, is_recurcive=False, timestamp_reception=None, training_metadata=None):
+    def post_profiles(self, source_id, dir_path, is_recurcive=False, timestamp_reception=None, training_metadata=None):
         if not path.isdir(dir_path):
             raise ValueError(dir_path + ' is not a directory')
         files_to_send = self._get_files_from_dir(dir_path, is_recurcive)
@@ -147,7 +147,7 @@ class Profile(object):
         }
         return result
 
-    def get_by_id(self, source_id=None, profile_id=None, profile_reference=None):
+    def get_profile(self, source_id=None, profile_id=None, profile_reference=None):
         """
         Retrieve the profile information associated with profile id
 

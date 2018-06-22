@@ -17,7 +17,7 @@ Example Source
     >>> from riminder.source import Source
     >>> client = Riminder(api_key="YOUR_API_KEY")
     >>> Source = Source(self.client)
-    >>> result = source.get_all()
+    >>> result = source.get_sources()
     >>> print(result)
     {
     "code": 200,
@@ -39,7 +39,7 @@ Example Profile
     >>> from riminder.profile import Profile
     >>> client = Riminder(api_key="YOUR_API_KEY")
     >>> profile = Profile(self.client)
-    >>> result = profile.get_all(source_ids=["source_id"])
+    >>> result = profile.get_profiles(source_ids=["source_id"])
     >>> print(result)
     {
         "code": 200,
@@ -62,7 +62,7 @@ Example Filter
     >>> from riminder.filter import Filter
     >>> client = Riminder(api_key="YOUR_API_KEY")
     >>> filter = Filter(self.client)
-    >>> result = filter.get_all()
+    >>> result = filter.get_filters()
     >>> print(result)
     {
         "code": 200,
@@ -91,21 +91,21 @@ you need to provide at least one of them but not necessarily both.
 Retreive all profiles that match the query param, only source_ids are required
 
 ```python
-    profile.get_all(source_ids, seniority, stage, date_start, date_end, filter_id, page, limit, sort_by, filter_reference, order_by)
+    profile.get_profiles(source_ids, seniority, stage, date_start, date_end, filter_id, page, limit, sort_by, filter_reference, order_by)
 ```
 
 * create_profile().
 Add a profile resume to a sourced id
 
 ```python
-    profile.create_profile(source_id, file_path, profile_reference, timestamp_reception, training_metadata)
+    profile.post_profile(source_id, file_path, profile_reference, timestamp_reception, training_metadata)
 ```
 
 * create_profile().
 Add a profile resume to a sourced id
 
 ```python
-    profile.create_profiles(source_id, file_path, is_recurcive, timestamp_reception, training_metadata)
+    profile.post_profiles(source_id, file_path, is_recurcive, timestamp_reception, training_metadata)
 ```
 It returns a dictionary with 'success' an 'fail' in it:
   * ||
@@ -116,7 +116,7 @@ It returns a dictionary with 'success' an 'fail' in it:
 Retrieve the profile information associated with profile id, source_id and profile_id are required
 
 ```python
-    profile.get_by_id(source_id, profile_id, profile_reference)
+    profile.get_profile(source_id, profile_id, profile_reference)
 ```
 
 * get_documents().
@@ -161,14 +161,14 @@ Edit the profile rating given a filter, all params are required
 get all sources
 
 ```python
-    source.get_all()
+    source.get_sources()
 ```
 
 * get_by_id().
 Retrieve the source information associated with source id (required)
 
 ```python
-    source.get_by_id(source_id)
+    source.get_source(source_id)
 ```
 
 ## filter
@@ -177,14 +177,14 @@ Retrieve the source information associated with source id (required)
 Retrieve all filters for given team account
 
 ```python
-    filter.get_all()
+    filter.get_filters()
 ```
 
 * get_by_id().
 Retrieve the filter information associated with the filter_id (required)
 
 ```python
-    filter.get_by_id(filter_id, filter_reference)
+    filter.get_filter(filter_id, filter_reference)
 ```
 
 
