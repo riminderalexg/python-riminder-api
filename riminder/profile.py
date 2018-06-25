@@ -120,9 +120,10 @@ class Profile(object):
         data["timestamp_reception"] = self._validate_timestamp_reception(timestamp_reception)
         data["training_metadata"] = training_metadata
         files = self._get_file_metadata(file_path, profile_reference)
-        files[1] = open(file_path, 'rb')
-        response = self.client.post("profile", data=data, files={"file": files})
-        files[1].close()
+        response = None
+        with open(file_path, 'rb') as in_file:
+            files = (files[0], in_file, files[2])
+            response = self.client.post("profile", data=data, files={"file": files})
         return response.json()
 
     def post_profiles(self, source_id, dir_path, is_recurcive=False, timestamp_reception=None, training_metadata=None):

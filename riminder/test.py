@@ -87,9 +87,13 @@ class TestHelper:
             'profile': {'profile_id': '1', 'profile_reference': 'I\'m free'}
         }
         json_data = json.dumps(data)
-        hasher = hmac.new(self.webhook_secret, json_data, hashlib.sha256)
-        encoded_sign = hasher.hexdigest()
-        sign = '{}.{}'.format(base64.encodestring(encoded_sign), base64.encodestring(json_data))
+        webhook_secret = bytes(self.webhook_secret, 'ascii')
+        json_data = bytes(json_data, 'utf8')
+        hasher = hmac.new(webhook_secret, json_data, hashlib.sha256)
+        encoded_sign = bytes(hasher.hexdigest(), 'ascii')
+        byte_encoded_sign = base64.encodebytes(encoded_sign)
+        byte_json_data = base64.encodebytes(json_data)
+        sign = '{}.{}'.format(byte_encoded_sign.decode('ascii'), byte_json_data.decode('ascii'))
         res = {'HTTP_RIMINDER_SIGNATURE': sign}
         return res
 
@@ -103,25 +107,25 @@ class TestProfile(unittest.TestCase):
         self.client = Riminder(api_key=self.helper.getKey())
         self.profile = Profile(self.client)
 
-    # def test_get_profiles(self):
-    #     # get all profiles
-    #     res = self.profile.get_profiles(source_ids=[self.helper.source_id])
-    #
-    #     # print(res)
-    #     self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
-    #
-    # def test_filter_by_seniority_and_limit_response_size(self):
-    #     # filter profiles by seniority and limit
-    #     # other params can be tested in the same manner
-    #     res = self.profile.get_profiles(
-    #         source_ids=[self.helper.source_id],
-    #         seniority="junior",
-    #         limit=5
-    #         )
-    #     self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
-    #     self.assertLessEqual(len(res["data"]["profiles"]), 5)
-    #     for profile in res["data"]["profiles"]:
-    #         self.assertEqual(profile["seniority"], "junior")
+    def test_get_profiles(self):
+        # get all profiles
+        res = self.profile.get_profiles(source_ids=[self.helper.source_id])
+
+        # print(res)
+        self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
+
+    def test_filter_by_seniority_and_limit_response_size(self):
+        # filter profiles by seniority and limit
+        # other params can be tested in the same manner
+        res = self.profile.get_profiles(
+            source_ids=[self.helper.source_id],
+            seniority="junior",
+            limit=5
+            )
+        self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
+        self.assertLessEqual(len(res["data"]["profiles"]), 5)
+        for profile in res["data"]["profiles"]:
+            self.assertEqual(profile["seniority"], "junior")
 
     def test_post_profile(self):
         file_path = "riminder/test_assets/cv_test5.pdf"
@@ -139,177 +143,177 @@ class TestProfile(unittest.TestCase):
                 print('failed send: {}->{}\n', kf, failed)
         self.assertEqual(len(res['success']), 2)
 
-#     def test_get_profile(self):
-#         res = self.profile.get_profile(
-#             source_id=self.helper.source_id,
-#             profile_id=self.helper.profile_id,
-#         )
-#         self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
-#
-#     def test_get_profile_ref(self):
-#         res = self.profile.get_profile(
-#             source_id=self.helper.source_id,
-#             profile_reference=self.helper.profile_ref,
-#         )
-#         errMessage = ""
-#         if not self.helper.profile_ref:
-#             errMessage = "No profile reference found: " + self.helper.gen_err_msg(res)
-#         self.assertEqual(res["code"], 200, msg=errMessage)
-#
-#     def test_get_documents(self):
-#         res = self.profile.get_documents(
-#             source_id=self.helper.source_id,
-#             profile_id=self.helper.profile_id,
-#         )
-#
-#         self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
-#
-#     def test_get_documents_ref(self):
-#         res = self.profile.get_documents(
-#             source_id=self.helper.source_id,
-#             profile_reference=self.helper.profile_ref,
-#         )
-#         errMessage = ""
-#         if not self.helper.profile_ref:
-#             errMessage = "No profile reference found: " + self.helper.gen_err_msg(res)
-#         self.assertEqual(res["code"], 200, msg=errMessage)
-#
-#     def test_get_parsing(self):
-#         res = self.profile.get_parsing(
-#             source_id=self.helper.source_id,
-#             profile_id=self.helper.profile_id,
-#         )
-#
-#         self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
-#
-#     def test_get_parsing_ref(self):
-#         res = self.profile.get_parsing(
-#             source_id=self.helper.source_id,
-#             profile_reference=self.helper.profile_ref,
-#         )
-#         errMessage = ""
-#         if not self.helper.profile_ref:
-#             errMessage = "No profile reference found: " + self.helper.gen_err_msg(res)
-#         self.assertEqual(res["code"], 200, msg=errMessage)
-#
-#     def test_get_scoring(self):
-#         res = self.profile.get_scoring(
-#             source_id=self.helper.source_id,
-#             profile_id=self.helper.profile_id,
-#         )
-#
-#         self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
-#
-#     def test_get_scoring_ref(self):
-#         res = self.profile.get_scoring(
-#             source_id=self.helper.source_id,
-#             profile_reference=self.helper.profile_ref,
-#         )
-#         errMessage = ""
-#         if not self.helper.profile_ref:
-#             errMessage = "No profile reference found: " + self.helper.gen_err_msg(res)
-#         self.assertEqual(res["code"], 200, msg=errMessage)
-#
-#     def test_update_stage(self):
-#         res = self.profile.update_stage(
-#             source_id=self.helper.source_id,
-#             profile_id=self.helper.profile_id,
-#             filter_id=self.helper.filter_id,
-#             stage=self.helper.stage,
-#         )
-#         self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
-#
-#     def test_update_stage_ref(self):
-#         res = self.profile.update_stage(
-#             source_id=self.helper.source_id,
-#             profile_reference=self.helper.profile_ref,
-#             filter_reference=self.helper.filter_ref,
-#             stage=self.helper.stage,
-#         )
-#         errMessage = ""
-#         if not self.helper.profile_ref or not self.helper.filter_ref:
-#             errMessage = "No profile reference found: " + self.helper.gen_err_msg(res)
-#         self.assertEqual(res["code"], 200, msg=errMessage)
-#
-#     def test_update_rating(self):
-#         res = self.profile.update_rating(
-#             source_id=self.helper.source_id,
-#             profile_id=self.helper.profile_id,
-#             filter_id=self.helper.filter_id,
-#             rating=int(self.helper.rating),
-#         )
-#         self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
-#
-#     def test_update_rating_ref(self):
-#         res = self.profile.update_rating(
-#             source_id=self.helper.source_id,
-#             profile_reference=self.helper.profile_ref,
-#             filter_reference=self.helper.filter_ref,
-#             rating=int(self.helper.rating),
-#         )
-#         errMessage = ""
-#         if not self.helper.profile_ref or not self.helper.filter_ref:
-#             errMessage = "No profile reference found: " + self.helper.gen_err_msg(res)
-#         self.assertEqual(res["code"], 200, msg=errMessage)
-#
-#
-# class TestSource(unittest.TestCase):
-#
-#     def setUp(self):
-#         self.helper = TestHelper()
-#         self.helper.setup()
-#         # init client and profile objects
-#         self.client = Riminder(api_key=self.helper.getKey())
-#         self.source = Source(self.client)
-#
-#     def test_get_sources(self):
-#         # get all sources
-#         res = self.source.get_sources()
-#
-#         # print(res)
-#         self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
-#
-#     def test_get_source(self):
-#         # get one source by id
-#         res = self.source.get_source(
-#             source_id=self.helper.source_id
-#         )
-#         # print(res)
-#         self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
-#
-#
-# class TestFilter(unittest.TestCase):
-#
-#     def setUp(self):
-#         self.helper = TestHelper()
-#         self.helper.setup()
-#         # init client and filter objects
-#         self.client = Riminder(api_key=self.helper.getKey())
-#         self.filter = Filter(self.client)
-#
-#     def test_get_filters(self):
-#         # get all filters
-#         res = self.filter.get_filters()
-#
-#         # print(res)
-#         self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
-#
-#     def test_get_filter(self):
-#         # get one filter by id
-#         res = self.filter.get_filter(
-#             filter_id=self.helper.filter_id
-#         )
-#         # print(res)
-#         self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
-#
-#     def test_get_filter_ref(self):
-#         # get one filter by id
-#         res = self.filter.get_filter(
-#             filter_reference=self.helper.filter_ref
-#         )
-#         # print(res)
-#         self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
-#
+    def test_get_profile(self):
+        res = self.profile.get_profile(
+            source_id=self.helper.source_id,
+            profile_id=self.helper.profile_id,
+        )
+        self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
+
+    def test_get_profile_ref(self):
+        res = self.profile.get_profile(
+            source_id=self.helper.source_id,
+            profile_reference=self.helper.profile_ref,
+        )
+        errMessage = ""
+        if not self.helper.profile_ref:
+            errMessage = "No profile reference found: " + self.helper.gen_err_msg(res)
+        self.assertEqual(res["code"], 200, msg=errMessage)
+
+    def test_get_documents(self):
+        res = self.profile.get_documents(
+            source_id=self.helper.source_id,
+            profile_id=self.helper.profile_id,
+        )
+
+        self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
+
+    def test_get_documents_ref(self):
+        res = self.profile.get_documents(
+            source_id=self.helper.source_id,
+            profile_reference=self.helper.profile_ref,
+        )
+        errMessage = ""
+        if not self.helper.profile_ref:
+            errMessage = "No profile reference found: " + self.helper.gen_err_msg(res)
+        self.assertEqual(res["code"], 200, msg=errMessage)
+
+    def test_get_parsing(self):
+        res = self.profile.get_parsing(
+            source_id=self.helper.source_id,
+            profile_id=self.helper.profile_id,
+        )
+
+        self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
+
+    def test_get_parsing_ref(self):
+        res = self.profile.get_parsing(
+            source_id=self.helper.source_id,
+            profile_reference=self.helper.profile_ref,
+        )
+        errMessage = ""
+        if not self.helper.profile_ref:
+            errMessage = "No profile reference found: " + self.helper.gen_err_msg(res)
+        self.assertEqual(res["code"], 200, msg=errMessage)
+
+    def test_get_scoring(self):
+        res = self.profile.get_scoring(
+            source_id=self.helper.source_id,
+            profile_id=self.helper.profile_id,
+        )
+
+        self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
+
+    def test_get_scoring_ref(self):
+        res = self.profile.get_scoring(
+            source_id=self.helper.source_id,
+            profile_reference=self.helper.profile_ref,
+        )
+        errMessage = ""
+        if not self.helper.profile_ref:
+            errMessage = "No profile reference found: " + self.helper.gen_err_msg(res)
+        self.assertEqual(res["code"], 200, msg=errMessage)
+
+    def test_update_stage(self):
+        res = self.profile.update_stage(
+            source_id=self.helper.source_id,
+            profile_id=self.helper.profile_id,
+            filter_id=self.helper.filter_id,
+            stage=self.helper.stage,
+        )
+        self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
+
+    def test_update_stage_ref(self):
+        res = self.profile.update_stage(
+            source_id=self.helper.source_id,
+            profile_reference=self.helper.profile_ref,
+            filter_reference=self.helper.filter_ref,
+            stage=self.helper.stage,
+        )
+        errMessage = ""
+        if not self.helper.profile_ref or not self.helper.filter_ref:
+            errMessage = "No profile reference found: " + self.helper.gen_err_msg(res)
+        self.assertEqual(res["code"], 200, msg=errMessage)
+
+    def test_update_rating(self):
+        res = self.profile.update_rating(
+            source_id=self.helper.source_id,
+            profile_id=self.helper.profile_id,
+            filter_id=self.helper.filter_id,
+            rating=int(self.helper.rating),
+        )
+        self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
+
+    def test_update_rating_ref(self):
+        res = self.profile.update_rating(
+            source_id=self.helper.source_id,
+            profile_reference=self.helper.profile_ref,
+            filter_reference=self.helper.filter_ref,
+            rating=int(self.helper.rating),
+        )
+        errMessage = ""
+        if not self.helper.profile_ref or not self.helper.filter_ref:
+            errMessage = "No profile reference found: " + self.helper.gen_err_msg(res)
+        self.assertEqual(res["code"], 200, msg=errMessage)
+
+
+class TestSource(unittest.TestCase):
+
+    def setUp(self):
+        self.helper = TestHelper()
+        self.helper.setup()
+        # init client and profile objects
+        self.client = Riminder(api_key=self.helper.getKey())
+        self.source = Source(self.client)
+
+    def test_get_sources(self):
+        # get all sources
+        res = self.source.get_sources()
+
+        # print(res)
+        self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
+
+    def test_get_source(self):
+        # get one source by id
+        res = self.source.get_source(
+            source_id=self.helper.source_id
+        )
+        # print(res)
+        self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
+
+
+class TestFilter(unittest.TestCase):
+
+    def setUp(self):
+        self.helper = TestHelper()
+        self.helper.setup()
+        # init client and filter objects
+        self.client = Riminder(api_key=self.helper.getKey())
+        self.filter = Filter(self.client)
+
+    def test_get_filters(self):
+        # get all filters
+        res = self.filter.get_filters()
+
+        # print(res)
+        self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
+
+    def test_get_filter(self):
+        # get one filter by id
+        res = self.filter.get_filter(
+            filter_id=self.helper.filter_id
+        )
+        # print(res)
+        self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
+
+    def test_get_filter_ref(self):
+        # get one filter by id
+        res = self.filter.get_filter(
+            filter_reference=self.helper.filter_ref
+        )
+        # print(res)
+        self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
+
 
 
 class TestWebhook(unittest.TestCase):

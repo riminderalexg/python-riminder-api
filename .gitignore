@@ -8,3 +8,4 @@ pyvenv.cfg
 riminder/__pycache__/
 share/
 tmp
+env/
