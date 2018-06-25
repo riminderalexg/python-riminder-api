@@ -1,3 +1,10 @@
 riminder.egg-info
 dist
 riminder/*pyc
+bin
+lib
+lib64
+pyvenv.cfg
+riminder/__pycache__/
+share/
+tmp

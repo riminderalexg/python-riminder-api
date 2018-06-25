@@ -66,14 +66,26 @@ class Webhook(object):
             for idx, c_to_replace in enumerate(fr):
                 if c == c_to_replace and idx < len(to):
                     c = to[idx]
-        res = res + c
+            res = res + c
         return res
+
+    def handleRequest(self, encoded_request):
+        """Handle request."""
+        if self.client.webhook_secret is None:
+            raise ValueError('Error: no webhook secret.')
+        decoded_request = self._decode_request(encoded_request)
+        if 'type' not in decoded_request:
+            raise ValueError("Error invalid request: no type field found.")
+        handler = self._getHandlerForEvent(decoded_request['type'])
+        if handler is None:
+            return
+        handler(decoded_request['type'], decoded_request)
 
     def _base64Urldecode(self, inp):
         return base64.decodestring(self._strtr(inp, '-_', '+/'))
 
     def _is_signature_valid(self, signature, payload):
-        hasher = hmac.new(self.client.webhook_secret, payload, hashlib.sha256)
+        hasher = hmac.new(bytes(self.client.webhook_secret, 'ascii'), payload, hashlib.sha256)
         exp_sign_digest = hasher.hexdigest()
 
         return hmac.compare_digest(exp_sign_digest, signature)
@@ -95,15 +107,3 @@ class Webhook(object):
             raise ValueError('{} is not a valid event'.format(event_name))
         handler = self.handlers[event_name]
         return handler
-
-    def handleRequest(self, encoded_request):
-        """Handle request."""
-        if self.client.webhook_secret is None:
-            raise ValueError('Error: no webhook secret.')
-        decoded_request = self._decode_request(encoded_request)
-        if 'type' not in decoded_request:
-            raise ValueError("Error invalid request: no type field found.")
-        handler = self._getHandlerForEvent(decoded_request['type'])
-        if handler is None:
-            return
-        handler(decoded_request['type'], decoded_request)

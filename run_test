@@ -1,3 +1,3 @@
 #!/bin/sh
 
-python riminder/test.py
+python3 riminder/test.py

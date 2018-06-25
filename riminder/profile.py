@@ -119,9 +119,10 @@ class Profile(object):
         data["profile_reference"] = self._validate_profile_reference(profile_reference)
         data["timestamp_reception"] = self._validate_timestamp_reception(timestamp_reception)
         data["training_metadata"] = training_metadata
-        files = self._get_file(file_path, profile_reference)
-
+        files = self._get_file_metadata(file_path, profile_reference)
+        files[1] = open(file_path, 'rb')
         response = self.client.post("profile", data=data, files={"file": files})
+        files[1].close()
         return response.json()
 
     def post_profiles(self, source_id, dir_path, is_recurcive=False, timestamp_reception=None, training_metadata=None):
@@ -132,7 +133,7 @@ class Profile(object):
         failed_upload = {}
         for file_path in files_to_send:
             try:
-                resp = self.create_profile(source_id=source_id,
+                resp = self.post_profile(source_id=source_id,
                     file_path=file_path, profile_reference="",
                     timestamp_reception=timestamp_reception, training_metadata=training_metadata)
                 if resp['code'] != 200 and resp['code'] != 201:
@@ -305,13 +306,13 @@ class Profile(object):
         response = self.client.patch('profile/rating', data=data)
         return response.json()
 
-    def _get_file(self, file_path, profile_reference):
+    def _get_file_metadata(self, file_path, profile_reference):
 
         try:
             return (
                 os.path.basename(file_path) + profile_reference,  # file_name
-                open(file_path, 'rb'),
-                magic.Magic(mime=True).from_file(file_path)
+                None,
+                magic.Magic(True).from_file(file_path)
             )
         except Exception as e:
             raise Exception(repr(e))
