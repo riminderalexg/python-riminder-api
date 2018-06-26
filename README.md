@@ -34,10 +34,9 @@ Example Source
 Example Profile
 
 ```sh
-    >>> from riminder import Riminder
-    >>> from riminder.profile import Profile
-    >>> client = Riminder(api_key="YOUR_API_KEY")
-    >>> profile = Profile(self.client)
+    >>> import riminder
+    >>> client = riminder.Riminder(api_key="YOUR_API_KEY")
+    >>> profile = riminder.Profile(self.client)
     >>> result = profile.get_profiles(source_ids=["source_id"])
     >>> print(result)
     {
@@ -234,9 +233,3 @@ $ python3 riminder/test.py
 ```
 
 * More help ? see  [Riminder API Docs](https://developers.riminder.net/v1.0/reference#authentication)
-
-# Todo
-
-* Finishing docstrings
-* All test must pass
-* Adding webhooks
