@@ -13,7 +13,7 @@ from webhook import Webhook, EVENT_FILTER_SCORE_ERROR
 
 class TestHelper:
     def __init__(self):
-        self.api_key = "ask_141a554a41a60221eff9fcc75cb282b9"
+        self.api_key = ""
         self.webhook_secret = 'totaly_a_valid_secret_key'
         self.source_id = None
         self.add_source_id = None
@@ -25,7 +25,7 @@ class TestHelper:
         self.stage = 'NEW'
         self.source_type = 'api'
         # if source_name is empty no name is selected
-        self.source_name = ['sdk_test']
+        self.source_name = []
 
     def getKey(self):
         return self.api_key
@@ -60,15 +60,18 @@ class TestHelper:
             res = api_profile.get_scoring(source_id=self.source_id, profile_id=profile_id)
             if res['code'] != 200 or not res['data']:
                 continue
-            # print(res)
-            self.profile_id = profile_id
-            self.profile_ref = profile['profile_reference']
-            self.filter_id = str(res['data'][0]['filter_id'])
-            self.filter_ref = str(res['data'][0]['filter_reference'])
-            if res['data'][0]['rating'] is not None:
-                self.rating = int(res['data'][0]['rating'])
-            if res['data'][0]['stage'] is not None:
-                self.stage = str(res['data'][0]['stage'])
+            for scoring in res['data']:
+                if scoring['filter_reference'] is None:
+                    continue
+                self.profile_id = profile_id
+                self.profile_ref = profile['profile_reference']
+                self.filter_id = str(scoring['filter_id'])
+                self.filter_ref = str(scoring['filter_reference'])
+                if scoring['rating'] is not None:
+                    self.rating = int(scoring['rating'])
+                if scoring['stage'] is not None:
+                    self.stage = str(scoring['stage'])
+                break
             # keep a valid profile but keep looking until one with a reference
             # is found.
             if not profile['profile_reference']:
@@ -230,7 +233,7 @@ class TestProfile(unittest.TestCase):
             filter_reference=self.helper.filter_ref,
             stage=self.helper.stage,
         )
-        errMessage = ""
+        errMessage = self.helper.gen_err_msg(res)
         if not self.helper.profile_ref or not self.helper.filter_ref:
             errMessage = "No profile reference found: " + self.helper.gen_err_msg(res)
         self.assertEqual(res["code"], 200, msg=errMessage)
@@ -251,7 +254,7 @@ class TestProfile(unittest.TestCase):
             filter_reference=self.helper.filter_ref,
             rating=int(self.helper.rating),
         )
-        errMessage = ""
+        errMessage = self.helper.gen_err_msg(res)
         if not self.helper.profile_ref or not self.helper.filter_ref:
             errMessage = "No profile reference found: " + self.helper.gen_err_msg(res)
         self.assertEqual(res["code"], 200, msg=errMessage)
@@ -307,13 +310,12 @@ class TestFilter(unittest.TestCase):
         self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
 
     def test_get_filter_ref(self):
-        # get one filter by id
+        # get one filter by ref
         res = self.filter.get_filter(
             filter_reference=self.helper.filter_ref
         )
         # print(res)
         self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
-
 
 
 class TestWebhook(unittest.TestCase):

@@ -265,7 +265,7 @@ class Profile(object):
             data["filter_id"] = self._validate_filter_id(filter_id)
         if profile_reference:
             data["profile_reference"] = self._validate_profile_reference(profile_reference)
-        if filter_id:
+        if filter_reference:
             data["filter_reference"] = self._validate_filter_reference(filter_reference)
         data["stage"] = self._validate_stage(stage)
 
