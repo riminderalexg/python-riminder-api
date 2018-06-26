@@ -13,10 +13,9 @@ $ pip3 install riminder
 Example Source
 
 ```sh
-    >>> from riminder import Riminder
-    >>> from riminder.source import Source
-    >>> client = Riminder(api_key="YOUR_API_KEY")
-    >>> Source = Source(self.client)
+    >>> import riminder
+    >>> client = riminder.Riminder(api_key="YOUR_API_KEY")
+    >>> source = riminder.Source(self.client)
     >>> result = source.get_sources()
     >>> print(result)
     {
@@ -58,10 +57,9 @@ Example Profile
 Example Filter
 
 ```sh
-    >>> from riminder import Riminder
-    >>> from riminder.filter import Filter
-    >>> client = Riminder(api_key="YOUR_API_KEY")
-    >>> filter = Filter(self.client)
+    >>> import riminder
+    >>> client = riminder.Riminder(api_key="YOUR_API_KEY")
+    >>> filter = riminder.Filter(self.client)
     >>> result = filter.get_filters()
     >>> print(result)
     {
@@ -87,22 +85,22 @@ For any methods that needs `*_id` and `*_reference`
 you need to provide at least one of them but not necessarily both.
 ## Profile
 
-* get_all().
+* get_profiles().
 Retreive all profiles that match the query param, only source_ids are required
 
 ```python
     profile.get_profiles(source_ids, seniority, stage, date_start, date_end, filter_id, page, limit, sort_by, filter_reference, order_by)
 ```
 
-* create_profile().
-Add a profile resume to a sourced id
+* post_profile().
+Add a profile resume to a source id
 
 ```python
     profile.post_profile(source_id, file_path, profile_reference, timestamp_reception, training_metadata)
 ```
 
-* create_profile().
-Add a profile resume to a sourced id
+* post_profiles().
+Add all resume from a directory to a source id
 
 ```python
     profile.post_profiles(source_id, file_path, is_recurcive, timestamp_reception, training_metadata)
@@ -112,7 +110,7 @@ It returns a dictionary with 'success' an 'fail' in it:
    * success: key: file_path - value: response from server
    * fail   : key: file_path - value: exception that occurs
 
-* get_by_id().
+* get_profile().
 Retrieve the profile information associated with profile id, source_id and profile_id are required
 
 ```python
@@ -130,14 +128,14 @@ Retrieve the profile information associated with profile id, source_id and profi
 Retrieve the profile parsing data path associated with profile id, source_id and profile_id are required
 
 ```python
-    profile.get_extractions(source_id, profile_id, profile_reference)
+    profile.get_parsing(source_id, profile_id, profile_reference)
 ```
 
 * get_scoring().
 Retrieve the profile scoring associated with profile id, source_id and profile_id are required
 
 ```python
-    profile.get_filters(source_id, profile_id)
+    profile.get_scoring(source_id, profile_id)
 ```
 
 * update_stage().
@@ -157,14 +155,14 @@ Edit the profile rating given a filter, all params are required
 
 ## Source
 
-* get_all().
+* get_sources().
 get all sources
 
 ```python
     source.get_sources()
 ```
 
-* get_by_id().
+* get_source().
 Retrieve the source information associated with source id (required)
 
 ```python
@@ -173,14 +171,14 @@ Retrieve the source information associated with source id (required)
 
 ## filter
 
-* get_all().
+* get_filters().
 Retrieve all filters for given team account
 
 ```python
     filter.get_filters()
 ```
 
-* get_by_id().
+* get_filter().
 Retrieve the filter information associated with the filter_id (required)
 
 ```python
@@ -195,7 +193,7 @@ To run the test, please follow these steps
 * `git clone https://github.com/Riminder/python-riminder-api`
 * From your python virtual environment navigate to the project directory and install requirements
 ```sh
-$ pip install -r requirements.txt
+$ pip3 install -r requirements.txt
 ```
 * run test
 ```sh
