@@ -3,7 +3,6 @@ import hmac
 import hashlib
 import base64
 import json
-from riminder import Riminder
 
 EVENT_PROFILE_PARSE_SUCCESS = 'profile.parse.success'
 EVENT_PROFILE_PARSE_ERROR = 'profile.parse.error'
@@ -20,9 +19,6 @@ class Webhook(object):
 
     def __init__(self, client):
         """Init."""
-        if not isinstance(client, Riminder):
-            raise TypeError("client must be instance of Riminder class")
-
         self.client = client
         self.handlers = {
             EVENT_PROFILE_PARSE_SUCCESS: None,
@@ -35,7 +31,7 @@ class Webhook(object):
             EVENT_FILTER_SCORE_ERROR: None,
         }
 
-    def post_check(self):
+    def check(self):
         """Get response from api for POST webhook/check."""
         response = self.client.post("webhook/check")
         return response.json()

@@ -1,19 +1,15 @@
-from riminder import Riminder
 
 
 class Filter(object):
 
     def __init__(self, client):
-        if not isinstance(client, Riminder):
-            raise TypeError("client must be instance of Riminder class")
-
         self.client = client
 
-    def get_filters(self):
+    def list(self):
         response = self.client.get("filters")
         return response.json()
 
-    def get_filter(self, filter_id=None, filter_reference=None):
+    def get(self, filter_id=None, filter_reference=None):
         query_params = {}
         if filter_id:
             query_params["filter_id"] = self._validate_id(filter_id, 'filter_id')

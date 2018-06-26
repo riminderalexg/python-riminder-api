@@ -1,4 +1,3 @@
-from riminder import Riminder
 import time
 import magic
 import os
@@ -47,14 +46,17 @@ class Profile(object):
         Returns:
             Profile instance object.
         """
-        if not isinstance(client, Riminder):
-            raise TypeError("client must be instance of Riminder class")
 
         self.client = client
+        self.stage = ProfileStage(self.client)
+        self.document = ProfileDocument(self.client)
+        self.parsing = ProfileParsing(self.client)
+        self.scoring = ProfileScoring(self.client)
+        self.rating = ProfileRating(self.client)
 
-    def get_profiles(self, source_ids=None, seniority="all", stage=None,
-                date_start="1494539999", date_end=TIMESTAMP_NOW, filter_id=None,
-                page=1, limit=30, sort_by='ranking', filter_reference=None, order_by=None):
+    def list(self, source_ids=None, seniority="all", stage=None,
+            date_start="1494539999", date_end=TIMESTAMP_NOW, filter_id=None,
+            page=1, limit=30, sort_by='ranking', filter_reference=None, order_by=None):
         """
         Retreive all profiles that match the query param
 
@@ -78,25 +80,25 @@ class Profile(object):
             Retrieve the profiles data as <dict>
         """
         query_params = {}
-        query_params["date_end"] = self._validate_date_end(date_end)
-        query_params["date_start"] = self._validate_date_start(date_start)
+        query_params["date_end"] = _validate_date_end(date_end)
+        query_params["date_start"] = _validate_date_start(date_start)
         if filter_id:
-            query_params["filter_id"] = self._validate_filter_id(filter_id)
+            query_params["filter_id"] = _validate_filter_id(filter_id)
         if filter_reference:
-            query_params["filter_reference"] = self._validate_filter_reference(filter_reference)
-        query_params["limit"] = self._validate_limit(limit)
-        query_params["page"] = self._validate_page(page)
-        query_params["seniority"] = self._validate_seniority(seniority)
-        query_params["sort_by"] = self._validate_sort_by(sort_by)
-        query_params["source_ids"] = json.dumps(self._validate_source_ids(source_ids))
-        query_params["stage"] = self._validate_stage(stage)
+            query_params["filter_reference"] = _validate_filter_reference(filter_reference)
+        query_params["limit"] = _validate_limit(limit)
+        query_params["page"] = _validate_page(page)
+        query_params["seniority"] = _validate_seniority(seniority)
+        query_params["sort_by"] = _validate_sort_by(sort_by)
+        query_params["source_ids"] = json.dumps(_validate_source_ids(source_ids))
+        query_params["stage"] = _validate_stage(stage)
         query_params["order_by"] = order_by
 
         response = self.client.get("profiles", query_params)
         return response.json()
 
-    def post_profile(self, source_id=None, file_path=None, profile_reference="",
-                     timestamp_reception=None, training_metadata=None):
+    def add(self, source_id=None, file_path=None, profile_reference="",
+            timestamp_reception=None, training_metadata=None):
         """
         Add a profile resume to a sourced id
 
@@ -115,26 +117,26 @@ class Profile(object):
             Other status codes otherwise.
         """
         data = {}
-        data["source_id"] = self._validate_source_id(source_id)
-        data["profile_reference"] = self._validate_profile_reference(profile_reference)
-        data["timestamp_reception"] = self._validate_timestamp_reception(timestamp_reception)
+        data["source_id"] = _validate_source_id(source_id)
+        data["profile_reference"] = _validate_profile_reference(profile_reference)
+        data["timestamp_reception"] = _validate_timestamp_reception(timestamp_reception)
         data["training_metadata"] = training_metadata
-        files = self._get_file_metadata(file_path, profile_reference)
+        files = _get_file_metadata(file_path, profile_reference)
         response = None
         with open(file_path, 'rb') as in_file:
             files = (files[0], in_file, files[2])
             response = self.client.post("profile", data=data, files={"file": files})
         return response.json()
 
-    def post_profiles(self, source_id, dir_path, is_recurcive=False, timestamp_reception=None, training_metadata=None):
+    def addList(self, source_id, dir_path, is_recurcive=False, timestamp_reception=None, training_metadata=None):
         if not path.isdir(dir_path):
             raise ValueError(dir_path + ' is not a directory')
-        files_to_send = self._get_files_from_dir(dir_path, is_recurcive)
+        files_to_send = _get_files_from_dir(dir_path, is_recurcive)
         succeed_upload = {}
         failed_upload = {}
         for file_path in files_to_send:
             try:
-                resp = self.post_profile(source_id=source_id,
+                resp = self.add(source_id=source_id,
                     file_path=file_path, profile_reference="",
                     timestamp_reception=timestamp_reception, training_metadata=training_metadata)
                 if resp['code'] != 200 and resp['code'] != 201:
@@ -149,7 +151,7 @@ class Profile(object):
         }
         return result
 
-    def get_profile(self, source_id=None, profile_id=None, profile_reference=None):
+    def get(self, source_id=None, profile_id=None, profile_reference=None):
         """
         Retrieve the profile information associated with profile id
 
@@ -163,15 +165,20 @@ class Profile(object):
             profile information
         """
         query_params = {}
-        query_params["source_id"] = self._validate_source_id(source_id)
+        query_params["source_id"] = _validate_source_id(source_id)
         if profile_id:
-            query_params["profile_id"] = self._validate_profile_id(profile_id)
+            query_params["profile_id"] = _validate_profile_id(profile_id)
         if profile_reference:
-            query_params["profile_reference"] = self._validate_profile_reference(profile_reference)
+            query_params["profile_reference"] = _validate_profile_reference(profile_reference)
         response = self.client.get('profile', query_params)
         return response.json()
 
-    def get_documents(self, source_id=None, profile_id=None, profile_reference=None):
+
+class ProfileDocument():
+    def __init__(self, api):
+        self.client = api
+
+    def list(self, source_id=None, profile_id=None, profile_reference=None):
         """
         Retrieve the file information
 
@@ -185,15 +192,20 @@ class Profile(object):
             document information, like type, name, extension, url.. associated to the profile id
         """
         query_params = {}
-        query_params["source_id"] = self._validate_source_id(source_id)
+        query_params["source_id"] = _validate_source_id(source_id)
         if profile_id:
-            query_params["profile_id"] = self._validate_profile_id(profile_id)
+            query_params["profile_id"] = _validate_profile_id(profile_id)
         if profile_reference:
-            query_params["profile_reference"] = self._validate_profile_reference(profile_reference)
+            query_params["profile_reference"] = _validate_profile_reference(profile_reference)
         response = self.client.get('profile/documents', query_params)
         return response.json()
 
-    def get_parsing(self, source_id=None, profile_id=None, profile_reference=None):
+
+class ProfileParsing():
+    def __init__(self, api):
+        self.client = api
+
+    def list(self, source_id=None, profile_id=None, profile_reference=None):
         """
         Retrieve the parsing information
 
@@ -207,15 +219,20 @@ class Profile(object):
             parsing information
         """
         query_params = {}
-        query_params["source_id"] = self._validate_source_id(source_id)
+        query_params["source_id"] = _validate_source_id(source_id)
         if profile_id:
-            query_params["profile_id"] = self._validate_profile_id(profile_id)
+            query_params["profile_id"] = _validate_profile_id(profile_id)
         if profile_reference:
-            query_params["profile_reference"] = self._validate_profile_reference(profile_reference)
+            query_params["profile_reference"] = _validate_profile_reference(profile_reference)
         response = self.client.get('profile/parsing', query_params)
         return response.json()
 
-    def get_scoring(self, source_id=None, profile_id=None, profile_reference=None):
+
+class ProfileScoring():
+    def __init__(self, api):
+        self.client = api
+
+    def list(self, source_id=None, profile_id=None, profile_reference=None):
         """
         Retrieve the scoring information
 
@@ -229,15 +246,20 @@ class Profile(object):
             parsing information
         """
         query_params = {}
-        query_params["source_id"] = self._validate_source_id(source_id)
+        query_params["source_id"] = _validate_source_id(source_id)
         if profile_id:
-            query_params["profile_id"] = self._validate_profile_id(profile_id)
+            query_params["profile_id"] = _validate_profile_id(profile_id)
         if profile_reference:
-            query_params["profile_reference"] = self._validate_profile_reference(profile_reference)
+            query_params["profile_reference"] = _validate_profile_reference(profile_reference)
         response = self.client.get('profile/scoring', query_params)
         return response.json()
 
-    def update_stage(self, source_id=None, profile_id=None, filter_id=None, stage=None, profile_reference=None, filter_reference=None):
+
+class ProfileStage():
+    def __init__(self, api):
+        self.client = api
+
+    def set(self, source_id=None, profile_id=None, filter_id=None, stage=None, profile_reference=None, filter_reference=None):
         """
         Edit the profile stage given a filter
 
@@ -258,21 +280,26 @@ class Profile(object):
             Other status codes otherwise.
         """
         data = {}
-        data["source_id"] = self._validate_source_id(source_id)
+        data["source_id"] = _validate_source_id(source_id)
         if profile_id:
-            data["profile_id"] = self._validate_profile_id(profile_id)
+            data["profile_id"] = _validate_profile_id(profile_id)
         if filter_id:
-            data["filter_id"] = self._validate_filter_id(filter_id)
+            data["filter_id"] = _validate_filter_id(filter_id)
         if profile_reference:
-            data["profile_reference"] = self._validate_profile_reference(profile_reference)
+            data["profile_reference"] = _validate_profile_reference(profile_reference)
         if filter_reference:
-            data["filter_reference"] = self._validate_filter_reference(filter_reference)
-        data["stage"] = self._validate_stage(stage)
+            data["filter_reference"] = _validate_filter_reference(filter_reference)
+        data["stage"] = _validate_stage(stage)
 
         response = self.client.patch('profile/stage', data=data)
         return response.json()
 
-    def update_rating(self, source_id=None, profile_id=None, filter_id=None, rating=None, profile_reference=None, filter_reference=None):
+
+class ProfileRating():
+    def __init__(self, api):
+        self.client = api
+
+    def set(self, source_id=None, profile_id=None, filter_id=None, rating=None, profile_reference=None, filter_reference=None):
         """
         Edit the profile rating given a filter
 
@@ -293,150 +320,150 @@ class Profile(object):
             Other status codes otherwise.
         """
         data = {}
-        data["source_id"] = self._validate_source_id(source_id)
+        data["source_id"] = _validate_source_id(source_id)
         if profile_id:
-            data["profile_id"] = self._validate_profile_id(profile_id)
+            data["profile_id"] = _validate_profile_id(profile_id)
         if filter_id:
-            data["filter_id"] = self._validate_filter_id(filter_id)
+            data["filter_id"] = _validate_filter_id(filter_id)
         if profile_reference:
-            data["profile_reference"] = self._validate_profile_reference(profile_reference)
+            data["profile_reference"] = _validate_profile_reference(profile_reference)
         if filter_reference:
-            data["filter_reference"] = self._validate_filter_reference(filter_reference)
-        data["rating"] = self._validate_rating(rating)
+            data["filter_reference"] = _validate_filter_reference(filter_reference)
+        data["rating"] = _validate_rating(rating)
 
         response = self.client.patch('profile/rating', data=data)
         return response.json()
 
-    def _get_file_metadata(self, file_path, profile_reference):
+def _get_file_metadata(file_path, profile_reference):
 
-        try:
-            return (
-                os.path.basename(file_path) + profile_reference,  # file_name
-                None,
-                magic.Magic(True).from_file(file_path)
-            )
-        except Exception as e:
-            raise Exception(repr(e))
+    try:
+        return (
+            os.path.basename(file_path) + profile_reference,  # file_name
+            None,
+            magic.Magic(True).from_file(file_path)
+        )
+    except Exception as e:
+        raise Exception(repr(e))
 
-    def _validate_source_ids(self, value):
-        if not isinstance(value, list):
-            raise TypeError("source_ids must be a list")
+def _validate_source_ids(value):
+    if not isinstance(value, list):
+        raise TypeError("source_ids must be a list")
 
-        if not value or not all(isinstance(elt, str) for elt in value):
-            raise TypeError("source_ids must contain list of strings")
+    if not value or not all(isinstance(elt, str) for elt in value):
+        raise TypeError("source_ids must contain list of strings")
 
-        return value
+    return value
 
-    def _validate_source_id(self, value):
-        if not isinstance(value, str) and value is not None:
-            raise TypeError("source_id must be string")
+def _validate_source_id(value):
+    if not isinstance(value, str) and value is not None:
+        raise TypeError("source_id must be string")
 
-        return value
+    return value
 
-    def _validate_profile_id(self, value):
-        if not isinstance(value, str) and value is not None:
-            raise TypeError("source_id must be string")
+def _validate_profile_id(value):
+    if not isinstance(value, str) and value is not None:
+        raise TypeError("source_id must be string")
 
-        return value
+    return value
 
-    def _validate_seniority(self, value):
-        if value not in SERNIORITY_VALUES:
-            raise ValueError("seniority value must be in {}".format(str(SERNIORITY_VALUES)))
+def _validate_seniority(value):
+    if value not in SERNIORITY_VALUES:
+        raise ValueError("seniority value must be in {}".format(str(SERNIORITY_VALUES)))
 
-        return value
+    return value
 
-    def _validate_stage(self, value):
-        if value not in STAGE_VALUES:
-            raise ValueError("stage value must be in {}".format(str(STAGE_VALUES)))
+def _validate_stage(value):
+    if value not in STAGE_VALUES:
+        raise ValueError("stage value must be in {}".format(str(STAGE_VALUES)))
 
-        return value
+    return value
 
-    def _validate_date_start(self, value):
-        if not isinstance(value, str):
-            raise TypeError("date_start must be string")
+def _validate_date_start(value):
+    if not isinstance(value, str):
+        raise TypeError("date_start must be string")
 
-        return value
+    return value
 
-    def _validate_date_end(self, value):
-        if not isinstance(value, str):
-            raise TypeError("date_end must be string")
+def _validate_date_end(value):
+    if not isinstance(value, str):
+        raise TypeError("date_end must be string")
 
-        return value
+    return value
 
-    def _validate_filter_id(self, value):
-        if not isinstance(value, str) and value is not None:
-            raise TypeError("filter_id must be string")
+def _validate_filter_id(value):
+    if not isinstance(value, str) and value is not None:
+        raise TypeError("filter_id must be string")
 
-        return value
+    return value
 
-    def _validate_filter_reference(self, value):
-        if not isinstance(value, str) and value is not None:
-            raise TypeError("filter_reference must be string")
+def _validate_filter_reference(value):
+    if not isinstance(value, str) and value is not None:
+        raise TypeError("filter_reference must be string")
 
-        return value
+    return value
 
-    def _validate_profile_reference(self, value):
-        if not isinstance(value, str) and value is not None:
-            raise TypeError("profile_reference must be string")
+def _validate_profile_reference(value):
+    if not isinstance(value, str) and value is not None:
+        raise TypeError("profile_reference must be string")
 
-        return value
+    return value
 
-    def _validate_page(self, value):
-        if not isinstance(value, int):
-            raise TypeError("page must be 'int'")
+def _validate_page(value):
+    if not isinstance(value, int):
+        raise TypeError("page must be 'int'")
 
-        return value
+    return value
 
-    def _validate_limit(self, value):
-        if not isinstance(value, int):
-            raise TypeError("limit must be 'int'")
+def _validate_limit(value):
+    if not isinstance(value, int):
+        raise TypeError("limit must be 'int'")
 
-        return value
+    return value
 
-    def _validate_rating(self, value):
-        if not isinstance(value, int):
-            raise TypeError("rating must be 'int'")
+def _validate_rating(value):
+    if not isinstance(value, int):
+        raise TypeError("rating must be 'int'")
 
-        return value
+    return value
 
-    def _validate_sort_by(self, value):
-        if value not in SORT_BY_VALUES:
-            raise ValueError("sort_by value must be in {}".format(str(SORT_BY_VALUES)))
+def _validate_sort_by(value):
+    if value not in SORT_BY_VALUES:
+        raise ValueError("sort_by value must be in {}".format(str(SORT_BY_VALUES)))
 
-        return value
+    return value
 
-    def _validate_profile_reference(self, value):
-        if not isinstance(value, str) and value is not None:
-            raise TypeError("profile_reference must be string")
+def _validate_profile_reference(value):
+    if not isinstance(value, str) and value is not None:
+        raise TypeError("profile_reference must be string")
 
-        return value
+    return value
 
-    def _validate_timestamp_reception(self, value):
-        if not isinstance(value, str) and value is not None:
-            raise TypeError("timestamp_reception must be string")
+def _validate_timestamp_reception(value):
+    if not isinstance(value, str) and value is not None:
+        raise TypeError("timestamp_reception must be string")
 
-        return value
+    return value
 
-    def _is_valid_extension(self, file_path):
-        ext = path.splitext(file_path)[1]
-        if not ext:
-            return False
-        return ext in VALID_EXTENSIONS
+def _is_valid_extension(file_path):
+    ext = path.splitext(file_path)[1]
+    if not ext:
+        return False
+    return ext in VALID_EXTENSIONS
 
-    def _is_valid_filename(self, file_path):
-        name = path.basename(file_path)
-        return name not in INVALID_FILENAME
+def _is_valid_filename(file_path):
+    name = path.basename(file_path)
+    return name not in INVALID_FILENAME
 
-    def _get_files_from_dir(self, dir_path, is_recurcive):
-        file_res = []
-        files_path = os.listdir(dir_path)
+def _get_files_from_dir(dir_path, is_recurcive):
+    file_res = []
+    files_path = os.listdir(dir_path)
 
-        for file_path in files_path:
-            true_path = path.join(dir_path, file_path)
-            if path.isdir(true_path) and is_recurcive:
-                if self._is_valid_filename(true_path):
-                    file_res += self._get_files_from_dir(true_path, is_recurcive)
-                continue
-            if self._is_valid_extension(true_path):
-                file_res.append(true_path)
-        return file_res
+    for file_path in files_path:
+        true_path = path.join(dir_path, file_path)
+        if path.isdir(true_path) and is_recurcive:
+            if _is_valid_filename(true_path):
+                file_res += _get_files_from_dir(true_path, is_recurcive)
+            continue
+        if _is_valid_extension(true_path):
+            file_res.append(true_path)
+    return file_res

@@ -5,10 +5,7 @@ import base64
 import json
 
 from riminder import Riminder
-from profile import Profile
-from source import Source
-from filter import Filter
-from webhook import Webhook, EVENT_FILTER_SCORE_ERROR
+from webhook import EVENT_FILTER_SCORE_ERROR
 
 
 class TestHelper:
@@ -35,9 +32,7 @@ class TestHelper:
 
     def setup(self):
         api = Riminder(api_key=self.api_key)
-        api_source = Source(api)
-        api_profile = Profile(api)
-        res = api_source.get_sources()
+        res = api.source.list()
         for source in res['data']:
             name = False
             type = False
@@ -51,13 +46,13 @@ class TestHelper:
         if self.add_source_id is None:
             raise ValueError('no api test source found')
         self.source_id = self.add_source_id
-        res = api_profile.get_profiles(source_ids=[self.source_id])
+        res = api.profile.list(source_ids=[self.source_id])
         if not res['data']['profiles']:
             raise ValueError('no profiles found')
         profiles = res['data']['profiles']
         for profile in profiles:
             profile_id = str(profile['profile_id'])
-            res = api_profile.get_scoring(source_id=self.source_id, profile_id=profile_id)
+            res = api.profile.scoring.list(source_id=self.source_id, profile_id=profile_id)
             if res['code'] != 200 or not res['data']:
                 continue
             for scoring in res['data']:
@@ -108,11 +103,10 @@ class TestProfile(unittest.TestCase):
         self.helper.setup()
         # init client and profile objects
         self.client = Riminder(api_key=self.helper.getKey())
-        self.profile = Profile(self.client)
 
     def test_get_profiles(self):
         # get all profiles
-        res = self.profile.get_profiles(source_ids=[self.helper.source_id])
+        res = self.client.profile.list(source_ids=[self.helper.source_id])
 
         # print(res)
         self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
@@ -120,7 +114,7 @@ class TestProfile(unittest.TestCase):
     def test_filter_by_seniority_and_limit_response_size(self):
         # filter profiles by seniority and limit
         # other params can be tested in the same manner
-        res = self.profile.get_profiles(
+        res = self.client.profile.list(
             source_ids=[self.helper.source_id],
             seniority="junior",
             limit=5
@@ -132,7 +126,7 @@ class TestProfile(unittest.TestCase):
 
     def test_post_profile(self):
         file_path = "riminder/test_assets/cv_test5.pdf"
-        res = self.profile.post_profile(
+        res = self.client.profile.add(
             source_id=self.helper.add_source_id,
             file_path=file_path,
         )
@@ -140,21 +134,21 @@ class TestProfile(unittest.TestCase):
 
     def test_post_profiles(self):
         dir_path = "riminder/test_assets/"
-        res = self.profile.post_profiles(source_id=self.helper.add_source_id, dir_path=dir_path, is_recurcive=True)
+        res = self.client.profile.addList(source_id=self.helper.add_source_id, dir_path=dir_path, is_recurcive=True)
         if len(res['fail']) > 0:
             for kf, failed in res['fail'].items():
                 print('failed send: {}->{}\n', kf, failed)
         self.assertEqual(len(res['success']), 2)
 
     def test_get_profile(self):
-        res = self.profile.get_profile(
+        res = self.client.profile.get(
             source_id=self.helper.source_id,
             profile_id=self.helper.profile_id,
         )
         self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
 
     def test_get_profile_ref(self):
-        res = self.profile.get_profile(
+        res = self.client.profile.get(
             source_id=self.helper.source_id,
             profile_reference=self.helper.profile_ref,
         )
@@ -164,7 +158,7 @@ class TestProfile(unittest.TestCase):
         self.assertEqual(res["code"], 200, msg=errMessage)
 
     def test_get_documents(self):
-        res = self.profile.get_documents(
+        res = self.client.profile.document.list(
             source_id=self.helper.source_id,
             profile_id=self.helper.profile_id,
         )
@@ -172,7 +166,7 @@ class TestProfile(unittest.TestCase):
         self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
 
     def test_get_documents_ref(self):
-        res = self.profile.get_documents(
+        res = self.client.profile.document.list(
             source_id=self.helper.source_id,
             profile_reference=self.helper.profile_ref,
         )
@@ -182,7 +176,7 @@ class TestProfile(unittest.TestCase):
         self.assertEqual(res["code"], 200, msg=errMessage)
 
     def test_get_parsing(self):
-        res = self.profile.get_parsing(
+        res = self.client.profile.parsing.list(
             source_id=self.helper.source_id,
             profile_id=self.helper.profile_id,
         )
@@ -190,7 +184,7 @@ class TestProfile(unittest.TestCase):
         self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
 
     def test_get_parsing_ref(self):
-        res = self.profile.get_parsing(
+        res = self.client.profile.parsing.list(
             source_id=self.helper.source_id,
             profile_reference=self.helper.profile_ref,
         )
@@ -200,7 +194,7 @@ class TestProfile(unittest.TestCase):
         self.assertEqual(res["code"], 200, msg=errMessage)
 
     def test_get_scoring(self):
-        res = self.profile.get_scoring(
+        res = self.client.profile.scoring.list(
             source_id=self.helper.source_id,
             profile_id=self.helper.profile_id,
         )
@@ -208,7 +202,7 @@ class TestProfile(unittest.TestCase):
         self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
 
     def test_get_scoring_ref(self):
-        res = self.profile.get_scoring(
+        res = self.client.profile.scoring.list(
             source_id=self.helper.source_id,
             profile_reference=self.helper.profile_ref,
         )
@@ -218,7 +212,7 @@ class TestProfile(unittest.TestCase):
         self.assertEqual(res["code"], 200, msg=errMessage)
 
     def test_update_stage(self):
-        res = self.profile.update_stage(
+        res = self.client.profile.stage.set(
             source_id=self.helper.source_id,
             profile_id=self.helper.profile_id,
             filter_id=self.helper.filter_id,
@@ -227,7 +221,7 @@ class TestProfile(unittest.TestCase):
         self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
 
     def test_update_stage_ref(self):
-        res = self.profile.update_stage(
+        res = self.client.profile.stage.set(
             source_id=self.helper.source_id,
             profile_reference=self.helper.profile_ref,
             filter_reference=self.helper.filter_ref,
@@ -239,7 +233,7 @@ class TestProfile(unittest.TestCase):
         self.assertEqual(res["code"], 200, msg=errMessage)
 
     def test_update_rating(self):
-        res = self.profile.update_rating(
+        res = self.client.profile.rating.set(
             source_id=self.helper.source_id,
             profile_id=self.helper.profile_id,
             filter_id=self.helper.filter_id,
@@ -248,7 +242,7 @@ class TestProfile(unittest.TestCase):
         self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
 
     def test_update_rating_ref(self):
-        res = self.profile.update_rating(
+        res = self.client.profile.rating.set(
             source_id=self.helper.source_id,
             profile_reference=self.helper.profile_ref,
             filter_reference=self.helper.filter_ref,
@@ -267,18 +261,17 @@ class TestSource(unittest.TestCase):
         self.helper.setup()
         # init client and profile objects
         self.client = Riminder(api_key=self.helper.getKey())
-        self.source = Source(self.client)
 
     def test_get_sources(self):
         # get all sources
-        res = self.source.get_sources()
+        res = self.client.source.list()
 
         # print(res)
         self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
 
     def test_get_source(self):
         # get one source by id
-        res = self.source.get_source(
+        res = self.client.source.get(
             source_id=self.helper.source_id
         )
         # print(res)
@@ -292,18 +285,17 @@ class TestFilter(unittest.TestCase):
         self.helper.setup()
         # init client and filter objects
         self.client = Riminder(api_key=self.helper.getKey())
-        self.filter = Filter(self.client)
 
     def test_get_filters(self):
         # get all filters
-        res = self.filter.get_filters()
+        res = self.client.filter.list()
 
         # print(res)
         self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
 
     def test_get_filter(self):
         # get one filter by id
-        res = self.filter.get_filter(
+        res = self.client.filter.get(
             filter_id=self.helper.filter_id
         )
         # print(res)
@@ -311,7 +303,7 @@ class TestFilter(unittest.TestCase):
 
     def test_get_filter_ref(self):
         # get one filter by ref
-        res = self.filter.get_filter(
+        res = self.client.filter.get(
             filter_reference=self.helper.filter_ref
         )
         # print(res)
@@ -332,16 +324,15 @@ class TestWebhook(unittest.TestCase):
         self.helper = TestHelper()
         self.helper.setup()
         self.client = Riminder(api_key=self.helper.getKey(), webhook_secret=self.helper.getWebhookSecret())
-        self.webhook = Webhook(self.client)
 
     def test_post_check(self):
-        res = self.webhook.post_check()
+        res = self.client.webhook.check()
         self.assertEqual(res['code'], 200, msg=self.helper.gen_err_msg(res))
 
     def test_handle_request(self):
-        self.webhook.setHandler(EVENT_FILTER_SCORE_ERROR, TestWebhook.handler)
+        self.client.webhook.setHandler(EVENT_FILTER_SCORE_ERROR, TestWebhook.handler)
         webhook_req = self.helper.gen_webhook_request(EVENT_FILTER_SCORE_ERROR)
-        self.webhook.handleRequest(webhook_req['HTTP_RIMINDER_SIGNATURE'])
+        self.client.webhook.handleRequest(webhook_req['HTTP_RIMINDER_SIGNATURE'])
         self.assertEqual(TestWebhook.last_evt_type, EVENT_FILTER_SCORE_ERROR)
         if 'profile' not in TestWebhook.last_decoded_request:
             self.fail('Resquest is not full.')
