@@ -5,7 +5,7 @@
 # Installation
 
 ```sh
-$ pip install riminder
+$ pip3 install riminder
 ```
 
 # Usage
@@ -199,7 +199,7 @@ $ pip install -r requirements.txt
 ```
 * run test
 ```sh
-$ python riminder/test.py
+$ python3 riminder/test.py
 ```
 
 # Help
