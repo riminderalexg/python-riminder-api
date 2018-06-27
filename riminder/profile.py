@@ -205,7 +205,7 @@ class ProfileParsing():
     def __init__(self, api):
         self.client = api
 
-    def list(self, source_id=None, profile_id=None, profile_reference=None):
+    def get(self, source_id=None, profile_id=None, profile_reference=None):
         """
         Retrieve the parsing information
 
@@ -334,6 +334,7 @@ class ProfileRating():
         response = self.client.patch('profile/rating', data=data)
         return response.json()
 
+
 def _get_file_metadata(file_path, profile_reference):
 
     try:
@@ -345,6 +346,7 @@ def _get_file_metadata(file_path, profile_reference):
     except Exception as e:
         raise Exception(repr(e))
 
+
 def _validate_source_ids(value):
     if not isinstance(value, list):
         raise TypeError("source_ids must be a list")
@@ -354,11 +356,13 @@ def _validate_source_ids(value):
 
     return value
 
+
 def _validate_source_id(value):
     if not isinstance(value, str) and value is not None:
         raise TypeError("source_id must be string")
 
     return value
+
 
 def _validate_profile_id(value):
     if not isinstance(value, str) and value is not None:
@@ -366,11 +370,13 @@ def _validate_profile_id(value):
 
     return value
 
+
 def _validate_seniority(value):
     if value not in SERNIORITY_VALUES:
         raise ValueError("seniority value must be in {}".format(str(SERNIORITY_VALUES)))
 
     return value
+
 
 def _validate_stage(value):
     if value not in STAGE_VALUES:
@@ -378,11 +384,13 @@ def _validate_stage(value):
 
     return value
 
+
 def _validate_date_start(value):
     if not isinstance(value, str):
         raise TypeError("date_start must be string")
 
     return value
+
 
 def _validate_date_end(value):
     if not isinstance(value, str):
@@ -390,11 +398,13 @@ def _validate_date_end(value):
 
     return value
 
+
 def _validate_filter_id(value):
     if not isinstance(value, str) and value is not None:
         raise TypeError("filter_id must be string")
 
     return value
+
 
 def _validate_filter_reference(value):
     if not isinstance(value, str) and value is not None:
@@ -402,11 +412,13 @@ def _validate_filter_reference(value):
 
     return value
 
+
 def _validate_profile_reference(value):
     if not isinstance(value, str) and value is not None:
         raise TypeError("profile_reference must be string")
 
     return value
+
 
 def _validate_page(value):
     if not isinstance(value, int):
@@ -414,11 +426,13 @@ def _validate_page(value):
 
     return value
 
+
 def _validate_limit(value):
     if not isinstance(value, int):
         raise TypeError("limit must be 'int'")
 
     return value
+
 
 def _validate_rating(value):
     if not isinstance(value, int):
@@ -426,17 +440,13 @@ def _validate_rating(value):
 
     return value
 
+
 def _validate_sort_by(value):
     if value not in SORT_BY_VALUES:
         raise ValueError("sort_by value must be in {}".format(str(SORT_BY_VALUES)))
 
     return value
 
-def _validate_profile_reference(value):
-    if not isinstance(value, str) and value is not None:
-        raise TypeError("profile_reference must be string")
-
-    return value
 
 def _validate_timestamp_reception(value):
     if not isinstance(value, str) and value is not None:
@@ -444,15 +454,18 @@ def _validate_timestamp_reception(value):
 
     return value
 
+
 def _is_valid_extension(file_path):
     ext = path.splitext(file_path)[1]
     if not ext:
         return False
     return ext in VALID_EXTENSIONS
 
+
 def _is_valid_filename(file_path):
     name = path.basename(file_path)
     return name not in INVALID_FILENAME
+
 
 def _get_files_from_dir(dir_path, is_recurcive):
     file_res = []

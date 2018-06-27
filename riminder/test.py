@@ -176,7 +176,7 @@ class TestProfile(unittest.TestCase):
         self.assertEqual(res["code"], 200, msg=errMessage)
 
     def test_get_parsing(self):
-        res = self.client.profile.parsing.list(
+        res = self.client.profile.parsing.get(
             source_id=self.helper.source_id,
             profile_id=self.helper.profile_id,
         )
@@ -184,7 +184,7 @@ class TestProfile(unittest.TestCase):
         self.assertEqual(res["code"], 200, msg=self.helper.gen_err_msg(res))
 
     def test_get_parsing_ref(self):
-        res = self.client.profile.parsing.list(
+        res = self.client.profile.parsing.get(
             source_id=self.helper.source_id,
             profile_reference=self.helper.profile_ref,
         )

@@ -27,32 +27,25 @@ class Riminder(object):
             resource_url=resource_url
         )
 
-    def _fill_headers(self, header):
-        res = {}
+    def _fill_headers(self, header, base={}):
         for key, value in header.items():
-            res[key] = value
-        return res
+            base[key] = value
+        return base
 
-    def get(self, resource_endpoint, query_params={}, headers={}):
+    def get(self, resource_endpoint, query_params={}):
         url = self._create_request_url(resource_endpoint)
-        header = self._fill_headers(self.auth_header)
-        header = {**header, **self._fill_headers(headers)}
         if query_params:
             return req.get(url, headers=self.auth_header, params=query_params)
         else:
             return req.get(url, headers=self.auth_header)
 
-    def post(self, resource_endpoint, data={}, files=None, headers={}):
+    def post(self, resource_endpoint, data={}, files=None):
         url = self._create_request_url(resource_endpoint)
-        header = self._fill_headers(self.auth_header)
-        header = {**header, **self._fill_headers(headers)}
         if files:
-            return req.post(url, headers=header, files=files, data=data)
+            return req.post(url, headers=self.auth_header, files=files, data=data)
         else:
-            return req.post(url, headers=header, data=data)
+            return req.post(url, headers=self.auth_header, data=data)
 
-    def patch(self, resource_endpoint, data={}, headers={}):
+    def patch(self, resource_endpoint, data={}):
         url = self._create_request_url(resource_endpoint)
-        header = self._fill_headers(self.auth_header)
-        header = {**header, **self._fill_headers(headers)}
         return req.patch(url, headers=self.auth_header, json=data)
