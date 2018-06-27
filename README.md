@@ -15,8 +15,7 @@ Example Source
 ```sh
     >>> import riminder
     >>> client = riminder.Riminder(api_key="YOUR_API_KEY")
-    >>> source = riminder.Source(self.client)
-    >>> result = source.get_sources()
+    >>> result = client.source.list()
     >>> print(result)
     {
     "code": 200,
@@ -36,8 +35,7 @@ Example Profile
 ```sh
     >>> import riminder
     >>> client = riminder.Riminder(api_key="YOUR_API_KEY")
-    >>> profile = riminder.Profile(self.client)
-    >>> result = profile.get_profiles(source_ids=["source_id"])
+    >>> result = client.profile.list(source_ids=["source_id"])
     >>> print(result)
     {
         "code": 200,
@@ -58,8 +56,7 @@ Example Filter
 ```sh
     >>> import riminder
     >>> client = riminder.Riminder(api_key="YOUR_API_KEY")
-    >>> filter = riminder.Filter(self.client)
-    >>> result = filter.get_filters()
+    >>> result = client.filter.list()
     >>> print(result)
     {
         "code": 200,
@@ -81,107 +78,107 @@ Example Filter
 # API
 
 For any methods that needs `*_id` and `*_reference`
-you need to provide at least one of them but not necessarily both.
+you need to provide at least one of them but not necessarily both, keep in mind that reference override id.
 ## Profile
 
-* get_profiles().
+* profile.list().
 Retreive all profiles that match the query param, only source_ids are required
 
 ```python
-    profile.get_profiles(source_ids, seniority, stage, date_start, date_end, filter_id, page, limit, sort_by, filter_reference, order_by)
+    client.profile.list(source_ids, seniority, stage, date_start, date_end, filter_id, page, limit, sort_by, filter_reference, order_by)
 ```
 
-* post_profile().
+* profile.add().
 Add a profile resume to a source id
 
 ```python
-    profile.post_profile(source_id, file_path, profile_reference, timestamp_reception, training_metadata)
+    client.profile.add(source_id, file_path, profile_reference, timestamp_reception, training_metadata)
 ```
 
-* post_profiles().
+* profile.addList().
 Add all resume from a directory to a source id
 
 ```python
-    profile.post_profiles(source_id, file_path, is_recurcive, timestamp_reception, training_metadata)
+    response = client.profile.addList(source_id, file_path, is_recurcive, timestamp_reception, training_metadata)
+    # file successfully sent
+    serverResponse = response['success']['path/to/file']
+    # file not sent
+    error = response['fail']['path/to/file']
 ```
-It returns a dictionary with 'success' an 'fail' in it:
-  * ||
-   * success: key: file_path - value: response from server
-   * fail   : key: file_path - value: exception that occurs
 
-* get_profile().
+* profile.get().
 Retrieve the profile information associated with profile id, source_id and profile_id are required
 
 ```python
-    profile.get_profile(source_id, profile_id, profile_reference)
+    client.profile.get(source_id, profile_id, profile_reference)
 ```
 
-* get_documents().
+* profile.document.list().
 Retrieve the profile information associated with profile id, source_id and profile_id are required
 
 ```python
-    profile.get_documents(source_id, profile_id, profile_reference)
+    client.profile.document.list(source_id, profile_id, profile_reference)
 ```
 
-* get_parsing().
+* profile.parsing.get().
 Retrieve the profile parsing data path associated with profile id, source_id and profile_id are required
 
 ```python
-    profile.get_parsing(source_id, profile_id, profile_reference)
+    client.profile.parsing.get(source_id, profile_id, profile_reference)
 ```
 
-* get_scoring().
+* profile.scoring.list().
 Retrieve the profile scoring associated with profile id, source_id and profile_id are required
 
 ```python
-    profile.get_scoring(source_id, profile_id)
+    client.profile.scoring.list(source_id, profile_id)
 ```
 
-* update_stage().
+* profile.stage.set().
 Edit the profile stage given a filter, source_id, profile_id and filter_id are required
 
 ```python
-    profile.update_stage(source_id, profile_id, filter_id, stage, profile_reference, filter_reference)
+    client.profile.stage.set(source_id, profile_id, filter_id, stage, profile_reference, filter_reference)
 ```
 
-* update_rating.
+* profile.rating.set().
 Edit the profile rating given a filter, all params are required
 
 ```python
-    profile.update_rating(source_id, profile_id, filter_id, rating, profile_reference, filter_reference)
+    client.profile.rating.set(source_id, profile_id, filter_id, rating, profile_reference, filter_reference)
 ```
 
 
 ## Source
 
-* get_sources().
+* source.list().
 get all sources
 
 ```python
-    source.get_sources()
+    client.source.list()
 ```
 
-* get_source().
+* source.get().
 Retrieve the source information associated with source id (required)
 
 ```python
-    source.get_source(source_id)
+    client.source.get(source_id)
 ```
 
 ## filter
 
-* get_filters().
+* filter.list().
 Retrieve all filters for given team account
 
 ```python
-    filter.get_filters()
+    client.filter.list()
 ```
 
-* get_filter().
+* filter.get().
 Retrieve the filter information associated with the filter_id (required)
 
 ```python
-    filter.get_filter(filter_id, filter_reference)
+    client.filter.get(filter_id, filter_reference)
 ```
 
 
@@ -196,7 +193,7 @@ $ pip3 install -r requirements.txt
 ```
 * run test
 ```sh
-$ python3 riminder/test.py
+$ ./run_test
 ```
 
 # Help
