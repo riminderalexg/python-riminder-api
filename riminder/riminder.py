@@ -1,10 +1,10 @@
 import requests as req
 import json
 
-import filter
-import profile
-import webhook
-import source
+from .filter import Filter
+from .profile import Profile
+from .webhook import Webhook
+from .source import Source
 
 RIMINDER_API_URL = "https://www.riminder.net/sf/public/api/v1.0/"
 
@@ -16,10 +16,10 @@ class Riminder(object):
             "X-API-Key": api_key
         }
         self.webhook_secret = webhook_secret
-        self.filter = filter.Filter(self)
-        self.profile = profile.Profile(self)
-        self.webhook = webhook.Webhook(self)
-        self.source = source.Source(self)
+        self.filter = Filter(self)
+        self.profile = Profile(self)
+        self.webhook = Webhook(self)
+        self.source = Source(self)
 
     def _create_request_url(self, resource_url):
         return "{api_endpoint}{resource_url}".format(

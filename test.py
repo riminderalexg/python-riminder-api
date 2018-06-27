@@ -5,7 +5,7 @@ import base64
 import json
 
 from riminder import Riminder
-from webhook import EVENT_FILTER_SCORE_ERROR
+from riminder.webhook import EVENT_FILTER_SCORE_ERROR
 
 
 class TestHelper:
