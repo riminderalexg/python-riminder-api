@@ -7,7 +7,7 @@ import json
 SERNIORITY_VALUES = ["all", "senior", "junior"]
 STAGE_VALUES = [None, "NEW", "YES", "LATER", "NO"]
 SORT_BY_VALUES = [None, "creation", "DESC", "reception", "ranking"]
-VALID_EXTENSIONS = ['.pdf', '.png', '.jpg', '.jpeg', '.bmp', '.doc', '.docx', '.rtf', '.dotx', '.odt', 'odp', 'ppt', 'pptx', 'rtf', 'msg']
+VALID_EXTENSIONS = ['.pdf', '.png', '.jpg', '.jpeg', '.bmp', '.doc', '.docx', '.rtf', '.dotx', '.odt', '.odp', '.ppt', '.pptx', '.rtf', '.msg']
 INVALID_FILENAME = ['.', '..']
 TIMESTAMP_NOW = str(time.time())
 
