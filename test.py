@@ -59,7 +59,7 @@ class TestHelper:
                 if scoring['filter_reference'] is None:
                     continue
                 self.profile_id = profile_id
-                self.profile_ref = profile['profile_reference']
+                self.profile_ref = str(profile['profile_reference'])
                 self.filter_id = str(scoring['filter_id'])
                 self.filter_ref = str(scoring['filter_reference'])
                 if scoring['rating'] is not None:
@@ -85,12 +85,12 @@ class TestHelper:
             'profile': {'profile_id': '1', 'profile_reference': 'I\'m free'}
         }
         json_data = json.dumps(data)
-        webhook_secret = bytes(self.webhook_secret, 'ascii')
-        json_data = bytes(json_data, 'utf8')
+        webhook_secret = bytearray(self.webhook_secret, 'ascii')
+        json_data = bytearray(json_data, 'utf8')
         hasher = hmac.new(webhook_secret, json_data, hashlib.sha256)
-        encoded_sign = bytes(hasher.hexdigest(), 'ascii')
-        byte_encoded_sign = base64.encodebytes(encoded_sign)
-        byte_json_data = base64.encodebytes(json_data)
+        encoded_sign = bytearray(hasher.hexdigest(), 'ascii')
+        byte_encoded_sign = base64.b64encode(encoded_sign)
+        byte_json_data = base64.b64encode(json_data)
         sign = '{}.{}'.format(byte_encoded_sign.decode('ascii'), byte_json_data.decode('ascii'))
         res = {'HTTP_RIMINDER_SIGNATURE': sign}
         return res

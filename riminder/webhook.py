@@ -79,16 +79,18 @@ class Webhook(object):
 
     def _base64Urldecode(self, inp):
         inp = self._strtr(inp, '-_', '+/')
-        byte_inp = base64.decodebytes(bytes(inp, 'ascii'))
+        byte_inp = base64.b64decode(bytearray(inp, 'ascii'))
         return byte_inp.decode('ascii')
 
     def _is_signature_valid(self, signature, payload):
-        utf8_payload = bytes(payload, 'utf8')
-        utf8_wb_secret = bytes(self.client.webhook_secret, 'utf8')
+        utf8_payload = bytearray(payload, 'utf8')
+        utf8_wb_secret = bytearray(self.client.webhook_secret, 'utf8')
         hasher = hmac.new(utf8_wb_secret, utf8_payload, hashlib.sha256)
         exp_sign_digest = hasher.hexdigest()
 
-        return hmac.compare_digest(exp_sign_digest, signature)
+        if exp_sign_digest == signature:
+            return True
+        return False
 
     def _decode_request(self, encoded_request):
         tmp = encoded_request.split('.', 2)
