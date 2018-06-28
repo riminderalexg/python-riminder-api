@@ -3,9 +3,13 @@
 
 
 # Installation
-
+The package is available for python3.5 >= or python2.7.*
 ```sh
 $ pip3 install riminder
+```
+or
+```sh
+$ pip install riminder
 ```
 
 # Usage
@@ -190,6 +194,10 @@ To run the test, please follow these steps
 * From your python virtual environment navigate to the project directory and install requirements
 ```sh
 $ pip3 install -r requirements.txt
+```
+or
+```sh
+$ pip install -r requirements.txt
 ```
 * run test
 ```sh
