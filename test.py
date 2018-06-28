@@ -92,7 +92,7 @@ class TestHelper:
         byte_encoded_sign = base64.encodebytes(encoded_sign)
         byte_json_data = base64.encodebytes(json_data)
         sign = '{}.{}'.format(byte_encoded_sign.decode('ascii'), byte_json_data.decode('ascii'))
-        res = {'HTTP_RIMINDER_SIGNATURE': sign}
+        res = {'HTTP-RIMINDER-SIGNATURE': sign}
         return res
 
 
@@ -332,7 +332,15 @@ class TestWebhook(unittest.TestCase):
     def test_handle_request(self):
         self.client.webhook.setHandler(EVENT_FILTER_SCORE_ERROR, TestWebhook.handler)
         webhook_req = self.helper.gen_webhook_request(EVENT_FILTER_SCORE_ERROR)
-        self.client.webhook.handleRequest(webhook_req['HTTP_RIMINDER_SIGNATURE'])
+        self.client.webhook.handleRequest(webhook_req['HTTP-RIMINDER-SIGNATURE'])
+        self.assertEqual(TestWebhook.last_evt_type, EVENT_FILTER_SCORE_ERROR)
+        if 'profile' not in TestWebhook.last_decoded_request:
+            self.fail('Resquest is not full.')
+
+    def test_handle_request_with_full_header(self):
+        self.client.webhook.setHandler(EVENT_FILTER_SCORE_ERROR, TestWebhook.handler)
+        webhook_req = self.helper.gen_webhook_request(EVENT_FILTER_SCORE_ERROR)
+        self.client.webhook.handleRequest(request_headers=webhook_req)
         self.assertEqual(TestWebhook.last_evt_type, EVENT_FILTER_SCORE_ERROR)
         if 'profile' not in TestWebhook.last_decoded_request:
             self.fail('Resquest is not full.')

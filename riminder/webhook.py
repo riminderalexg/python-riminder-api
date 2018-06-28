@@ -12,6 +12,7 @@ EVENT_FILTER_TRAIN_SUCCESS = 'filter.train.success'
 EVENT_FILTER_TRAIN_ERROR = 'filter.train.error'
 EVENT_FILTER_SCORE_SUCCESS = 'filter.score.success'
 EVENT_FILTER_SCORE_ERROR = 'filter.score.error'
+SIGNATURE_HEADER = 'HTTP-RIMINDER-SIGNATURE'
 
 
 class Webhook(object):
@@ -65,11 +66,19 @@ class Webhook(object):
             res = res + c
         return res
 
-    def handleRequest(self, encoded_request):
+    def _get_signature_header(self, signature_header, request_headers):
+        if signature_header is not None:
+            return signature_header
+        if SIGNATURE_HEADER in request_headers:
+            return request_headers[SIGNATURE_HEADER]
+        raise ValueError('Error: No {} given'.format(SIGNATURE_HEADER))
+
+    def handleRequest(self, signature_header=None, request_headers={}):
         """Handle request."""
         if self.client.webhook_secret is None:
             raise ValueError('Error: no webhook secret.')
-        decoded_request = self._decode_request(encoded_request)
+        encoded_header = self._get_signature_header(signature_header, request_headers)
+        decoded_request = self._decode_request(encoded_header)
         if 'type' not in decoded_request:
             raise ValueError("Error invalid request: no type field found.")
         handler = self._getHandlerForEvent(decoded_request['type'])
@@ -93,7 +102,7 @@ class Webhook(object):
     def _decode_request(self, encoded_request):
         tmp = encoded_request.split('.', 2)
         if len(tmp) < 2:
-            raise ValueError("Error invalid request. Maybe it's not the 'HTTP_RIMINDER_SIGNATURE' field")
+            raise ValueError("Error invalid request. Maybe it's not the 'HTTP-RIMINDER-SIGNATURE' field")
         encoded_sign = tmp[0]
         payload = tmp[1]
         sign = self._base64Urldecode(encoded_sign)
