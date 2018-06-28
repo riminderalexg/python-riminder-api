@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='riminder',
-      version='1.0.0',
+      version='1.0.3',
       description='python riminder riminder api package',
       url='https://github.com/Riminder/python-riminder-api',
       author='mnouayti',
