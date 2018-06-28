@@ -1,6 +1,8 @@
 # python-riminder-api
 🐍 Riminder API Python Wrapper
 
+# python3
+  python3 package is available [here](https://github.com/Riminder/python-riminder-api/tree/master).
 
 # Installation
 
