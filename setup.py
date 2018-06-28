@@ -12,4 +12,5 @@ setup(name='riminder',
           'requests==2.18.4',
           'python-magic==0.4.15'
       ],
+      python_requires='==2.7.*',
       zip_safe=False)
