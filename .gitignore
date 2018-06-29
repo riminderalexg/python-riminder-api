@@ -9,3 +9,5 @@ riminder/__pycache__/
 share/
 tmp
 env/
+build/
+deploy
