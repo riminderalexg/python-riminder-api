@@ -132,13 +132,27 @@ class TestProfile(unittest.TestCase):
         )
         self.assertEqual(res["code"], 201, msg=self.helper.gen_err_msg(res))
 
+    def test_post_profile_with_metadata(self):
+        file_path = "riminder/test_assets/cv_test8.jpg"
+        metadata = {
+            'filter_id': self.helper.filter_id,
+            'stage': 'later',
+            'rating': 2
+        }
+        res = self.client.profile.add(
+            source_id=self.helper.add_source_id,
+            file_path=file_path,
+            training_metadata=metadata
+        )
+        self.assertEqual(res["code"], 201, msg=self.helper.gen_err_msg(res))
+
     def test_post_profiles(self):
         dir_path = "riminder/test_assets/"
         res = self.client.profile.addList(source_id=self.helper.add_source_id, dir_path=dir_path, is_recurcive=True)
         if len(res['fail']) > 0:
             for kf, failed in res['fail'].items():
                 print('failed send: {}->{}\n', kf, failed)
-        self.assertEqual(len(res['success']), 2)
+        self.assertEqual(len(res['success']), 3)
 
     def test_get_profile(self):
         res = self.client.profile.get(
