@@ -187,6 +187,39 @@ Retrieve the filter information associated with the filter_id (required)
     client.filter.get(filter_id, filter_reference)
 ```
 
+## webhook
+
+* webhook.check()
+
+Checks if your webhook integration is enabled and works.
+
+```python
+  client.webhook.check()
+```
+
+* handle webhook request
+
+Here is an example of how to handle webhooks
+
+```python
+  import riminder
+
+  def func_callback(event_name, webhook_data):
+    print("{} {}".format(event_name, webhook_data)
+
+  client = riminder.Riminder('api_key', webhook_secret='webhook_key')
+
+  # Set an handler for webhook event.
+  callback = func_callback
+  resp = client.webhook.setHandler('profile.parse.success', callback)
+
+  # Get the header of the request sent by the webhook.
+  encoded_header = {HTTP-RIMINDER-SIGNATURE: 'some encoded datas'}
+
+  # Handle the webhook
+  client.webhook.handleRequest(request_headers=encoded_header)
+```
+
 
 # Tests
 
