@@ -7,6 +7,7 @@ from .webhook import Webhook
 from .source import Source
 
 RIMINDER_API_URL = "https://www.riminder.net/sf/public/api/v1.0/"
+# RIMINDER_API_URL = "http://localhost:8000/public/api/v1.0/"
 
 
 class Riminder(object):

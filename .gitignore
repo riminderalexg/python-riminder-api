@@ -11,3 +11,4 @@ tmp
 env/
 deploy
 build
+test_struct_profile.py
