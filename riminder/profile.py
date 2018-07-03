@@ -53,6 +53,7 @@ class Profile(object):
         self.parsing = ProfileParsing(self.client)
         self.scoring = ProfileScoring(self.client)
         self.rating = ProfileRating(self.client)
+        self.data = ProfileData(self.client)
 
     def list(self, source_ids=None, seniority="all", stage=None,
             date_start="1494539999", date_end=TIMESTAMP_NOW, filter_id=None,
@@ -120,7 +121,7 @@ class Profile(object):
         data["source_id"] = _validate_source_id(source_id)
         data["profile_reference"] = _validate_profile_reference(profile_reference)
         data["timestamp_reception"] = _validate_timestamp_reception(timestamp_reception)
-        data["training_metadata"] = training_metadata
+        data["training_metadata"] = _validate_training_metadata(training_metadata)
         files = _get_file_metadata(file_path, profile_reference)
         response = None
         with open(file_path, 'rb') as in_file:
@@ -335,6 +336,36 @@ class ProfileRating():
         return response.json()
 
 
+class ProfileData():
+    """Gathers route about structured profile."""
+
+    def __init__(self, api):
+        """Init."""
+        self.client = api
+
+    def check(self, profile_data, profile_metadata={}, profile_reference={}):
+        """Use the api to check weither the profile_data are valid."""
+        data = {
+            "profileData": profile_data,
+            "profileMetadata": profile_metadata,
+            "profile_reference": _validate_profile_reference(profile_reference)
+        }
+        response = self.client.post("profile/data/check", data=data)
+        return response
+
+    def add(self, source_id, profile_data, profile_metadata={}, profile_reference={}, timestamp_reception=None):
+        """Use the api to add a new profile using profile_data."""
+        data = {
+            "source_id": _validate_source_id(source_id),
+            "profileData": profile_data,
+            "profileMetadata": profile_metadata,
+            "profile_reference": _validate_profile_reference(profile_reference),
+            "timestamp_reception": timestamp_reception
+        }
+        response = self.client.post("profile/data", data=data)
+        return response
+
+
 def _get_file_metadata(file_path, profile_reference):
 
     try:
@@ -345,6 +376,12 @@ def _get_file_metadata(file_path, profile_reference):
         )
     except Exception as e:
         raise Exception(repr(e))
+
+
+def _validate_training_metadata(value):
+    if not isinstance(value, list):
+        raise TypeError("training_metadata must be a list")
+    return value
 
 
 def _validate_source_ids(value):

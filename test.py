@@ -3,6 +3,7 @@ import hmac
 import hashlib
 import base64
 import json
+import random
 
 from riminder import Riminder
 from riminder.webhook import EVENT_FILTER_SCORE_ERROR
@@ -134,11 +135,11 @@ class TestProfile(unittest.TestCase):
 
     def test_post_profile_with_metadata(self):
         file_path = "riminder/test_assets/cv_test8.jpg"
-        metadata = {
+        metadata = [{
             'filter_id': self.helper.filter_id,
             'stage': 'later',
             'rating': 2
-        }
+        }]
         res = self.client.profile.add(
             source_id=self.helper.add_source_id,
             file_path=file_path,
@@ -266,6 +267,139 @@ class TestProfile(unittest.TestCase):
         if not self.helper.profile_ref or not self.helper.filter_ref:
             errMessage = "No profile reference found: " + self.helper.gen_err_msg(res)
         self.assertEqual(res["code"], 200, msg=errMessage)
+
+    def test_check_profile_data_add(self):
+        metadata = {
+          "train": [
+            {
+              "filter_reference": "reference0",
+              "stage": None,
+              "stage_timestamp": None,
+              "rating": 2,
+              "rating_timestamp": 1530607434
+            },
+            {
+              "filter_reference": "reference1",
+              "stage": None,
+              "stage_timestamp": None,
+              "rating": 2,
+              "rating_timestamp": 1530607434
+            }
+          ]
+        }
+        profile_data = {
+            "name": "TESTRozé Baptiste",
+            "email": "someone@someonelse.com",
+            "address": "1 rue de somexhereelse",
+            "experiences": [
+              {
+                "start": "15/02/2018",
+                "end": "1/06/2018",
+                "title": "Advisor",
+                "company": "PwC luxembourg",
+                "location": "Paris",
+                "description": "Doing IT integration and RPA"
+              }
+            ],
+            "educations": [
+              {
+                "start": "2000",
+                "end": "2018",
+                "title": "Diplome d'ingénieur",
+                "school": "UTT",
+                "description": "Management des systèmes d'information",
+                "location": "Mars"
+              }
+            ],
+            "skills": [
+              "manual skill",
+              "Creative spirit",
+              "Writing skills",
+              "Communication",
+              "Project management",
+              "French",
+              "German",
+              "Korean",
+              "English",
+              "Accounting",
+              "Human resources"
+            ]
+          }
+        res = self.client.profile.data.check(
+            profile_data=profile_data,
+            profile_metadata=metadata,
+            profile_reference=random.randint(0, 999999)
+        )
+        errMessage = self.helper.gen_err_msg(res)
+        self.assertEqual(res["code"], 200, msg=errMessage)
+
+    def test_check_profile_data_add(self):
+        metadata = {
+          "train": [
+            {
+              "filter_reference": "reference0",
+              "stage": None,
+              "stage_timestamp": None,
+              "rating": 2,
+              "rating_timestamp": 1530607434
+            },
+            {
+              "filter_reference": "reference1",
+              "stage": None,
+              "stage_timestamp": None,
+              "rating": 2,
+              "rating_timestamp": 1530607434
+            }
+          ]
+        }
+        profile_data = {
+            "name": "TESTRozé Baptiste",
+            "email": "someone@someonelse.com",
+            "address": "1 rue de somexhereelse",
+            "experiences": [
+              {
+                "start": "15/02/2018",
+                "end": "1/06/2018",
+                "title": "Advisor",
+                "company": "PwC luxembourg",
+                "location": "Paris",
+                "description": "Doing IT integration and RPA"
+              }
+            ],
+            "educations": [
+              {
+                "start": "2000",
+                "end": "2018",
+                "title": "Diplome d'ingénieur",
+                "school": "UTT",
+                "description": "Management des systèmes d'information",
+                "location": "Mars"
+              }
+            ],
+            "skills": [
+              "manual skill",
+              "Creative spirit",
+              "Writing skills",
+              "Communication",
+              "Project management",
+              "French",
+              "German",
+              "Korean",
+              "English",
+              "Accounting",
+              "Human resources"
+            ]
+          }
+        res = self.client.profile.data.check(
+            source_id=self.helper.add_source_id,
+            timestamp_reception=1530607434,
+            profile_data=profile_data,
+            profile_metadata=metadata,
+            profile_reference=random.randint(0, 999999)
+        )
+        errMessage = self.helper.gen_err_msg(res)
+        self.assertEqual(res["code"], 200, msg=errMessage)
+
 
 
 class TestSource(unittest.TestCase):
