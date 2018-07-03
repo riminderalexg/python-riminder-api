@@ -343,7 +343,7 @@ class ProfileData():
         """Init."""
         self.client = api
 
-    def check(self, profile_data, profile_metadata={}, profile_reference={}):
+    def check(self, profile_data, profile_metadata={}, profile_reference=""):
         """Use the api to check weither the profile_data are valid."""
         data = {
             "profileData": profile_data,
@@ -353,7 +353,7 @@ class ProfileData():
         response = self.client.post("profile/data/check", data=data)
         return response
 
-    def add(self, source_id, profile_data, profile_metadata={}, profile_reference={}, timestamp_reception=None):
+    def add(self, source_id, profile_data, profile_metadata={}, profile_reference="", timestamp_reception=None):
         """Use the api to add a new profile using profile_data."""
         data = {
             "source_id": _validate_source_id(source_id),
