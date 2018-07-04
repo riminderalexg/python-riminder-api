@@ -87,21 +87,23 @@ For any methods that needs `*_id` and `*_reference`
 you need to provide at least one of them but not necessarily both, keep in mind that reference override id.
 ## Profile
 
-* profile.list().
+* profile.list().    
 Retreive all profiles that match the query param, only source_ids are required
 
 ```python
     client.profile.list(source_ids, seniority, stage, date_start, date_end, filter_id, page, limit, sort_by, filter_reference, order_by)
 ```
+source_ids is required
 
-* profile.add().
+* profile.add().   
 Add a profile resume to a source id
 
 ```python
     client.profile.add(source_id, file_path, profile_reference, timestamp_reception, training_metadata)
 ```
+source_id and file_path are required
 
-* profile.addList().
+* profile.addList().    
 Add all resume from a directory to a source id
 
 ```python
@@ -111,91 +113,149 @@ Add all resume from a directory to a source id
     # file not sent
     error = response['fail']['path/to/file']
 ```
+source_id and file_path are required.
 
-* profile.get().
+* profile.get().     
 Retrieve the profile information associated with profile id, source_id and profile_id are required
 
 ```python
     client.profile.get(source_id, profile_id, profile_reference)
 ```
+source_id and whether profile_id or profile_reference are required.
 
-* profile.document.list().
+* profile.document.list().     
 Retrieve the profile information associated with profile id, source_id and profile_id are required
 
 ```python
     client.profile.document.list(source_id, profile_id, profile_reference)
 ```
+source_id and whether profile_id or profile_reference are required.
 
-* profile.parsing.get().
+
+* profile.parsing.get().     
 Retrieve the profile parsing data path associated with profile id, source_id and profile_id are required
 
 ```python
     client.profile.parsing.get(source_id, profile_id, profile_reference)
 ```
+source_id and whether profile_id or profile_reference are required.
 
-* profile.scoring.list().
+* profile.scoring.list().     
 Retrieve the profile scoring associated with profile id, source_id and profile_id are required
 
 ```python
     client.profile.scoring.list(source_id, profile_id)
 ```
+source_id and whether profile_id or profile_reference are required.
 
-* profile.stage.set().
+* profile.stage.set().     
 Edit the profile stage given a filter, source_id, profile_id and filter_id are required
 
 ```python
     client.profile.stage.set(source_id, profile_id, filter_id, stage, profile_reference, filter_reference)
 ```
+source_id, stage, whether profile_id or profile_reference and whether filter_id or filter_reference are required.
 
-* profile.rating.set().
+* profile.rating.set().     
 Edit the profile rating given a filter, all params are required
 
 ```python
     client.profile.rating.set(source_id, profile_id, filter_id, rating, profile_reference, filter_reference)
 ```
+source_id, rating, whether profile_id or profile_reference and whether filter_id or filter_reference are required.
 
+* profile.data.check().     
+Check validate a parsed profile is valid for upload.
+
+```python
+  client.profile.data.check(profile_data, profile_metadata, profile_reference)
+```
+profile_data is required.
+
+* profile.data.add().     
+Add a parsed profile to the platform.
+
+```python
+  client.profile.data.add(source_id, profile_data, profile_metadata, profile_reference, timestamp_reception)
+```
+profile_data and source_id are required.
 
 ## Source
 
-* source.list().
+* source.list().     
 get all sources
 
 ```python
     client.source.list()
 ```
 
-* source.get().
-Retrieve the source information associated with source id (required)
+* source.get().     
+Retrieve the source information associated with source id
 
 ```python
     client.source.get(source_id)
 ```
+source_id is required.
 
 ## filter
 
-* filter.list().
+* filter.list().     
 Retrieve all filters for given team account
 
 ```python
     client.filter.list()
 ```
 
-* filter.get().
-Retrieve the filter information associated with the filter_id (required)
+* filter.get().     
+Retrieve the filter information associated with the filter_id or filter_reference
 
 ```python
     client.filter.get(filter_id, filter_reference)
 ```
+filter_id or filter_reference is required.
 
 ## webhook
 
 * webhook.check()
-
-Checks if your webhook integration is enabled and works.
+Checks weither your webhook integration is enabled and works.
 
 ```python
   client.webhook.check()
 ```
+
+* webhook.setHandler()     
+Add an handler of a webhook event
+
+```python
+  client.webhook.setHandler(event_name, callback)
+```
+event_name and callback are required.
+
+* webhook.isHandlerPresent(event_name).  
+Checks if a callback is bind to an event
+
+```python
+  client.webhook.isHandlerPresent(event_name)
+```
+event_name and callback are required.
+
+* webhook.removeHandler(event_name).    
+Remove the handler for a webhook event_name
+
+```python
+  client.webhook.removeHandler(event_name)
+```
+event_name and callback are required.
+
+* webhook.handleRequest(request_headers, signature_header)   
+Start the handler for the given webhook request.
+
+```python
+  client.webhook.handleRequest(request_headers, signature_header)
+```
+request_headers the headers of the webhook request while signature_header is the `HTTP-RIMINDER-SIGNATURE` header only, one of them is required.
+
+event_name is required
 
 * handle webhook request
 
