@@ -168,7 +168,7 @@ source_id, rating, whether profile_id or profile_reference and whether filter_id
 Check validate a parsed profile is valid for upload.
 
 ```python
-  client.profile.data.check(profile_data, profile_metadata, profile_reference)
+  client.profile.data.check(profile_data, training_metadata)
 ```
 profile_data is required.
 
@@ -176,9 +176,74 @@ profile_data is required.
 Add a parsed profile to the platform.
 
 ```python
-  client.profile.data.add(source_id, profile_data, profile_metadata, profile_reference, timestamp_reception)
+  client.profile.data.add(source_id, profile_data, training_metadata, profile_reference, timestamp_reception)
 ```
 profile_data and source_id are required.
+
+`training_metadata` is a list of object like this:
+```python
+training_metadata = [
+      {
+        "filter_reference": "reference0",
+        "stage": null,
+        "stage_timestamp": null,
+        "rating": 2,
+        "rating_timestamp": 1530607434
+      },
+      {
+        "filter_reference": "reference1",
+        "stage": null,
+        "stage_timestamp": null,
+        "rating": 2,
+        "rating_timestamp": 1530607434
+      }
+    ]
+```
+
+`profile_data` is an object like this:
+```python
+profile_data = {
+            "name": "Hari Seldon",
+            "email": "harisledon@trantor.trt",
+            "address": "1 rue streeling",
+            "experiences": [
+              {
+                "start": "15/02/12600",
+                "end": "",
+                "title": "Lead",
+                "company": "Departement de la psychohistoire",
+                "location": "Trator",
+                "description": "Developping psychohistoire."
+              }
+            ],
+            "educations": [
+              {
+                "start": "12540",
+                "end": "12550",
+                "title": "Diplome d'ingénieur mathematicien",
+                "school": "Université de Hélicon",
+                "description": "Etude des mathematique",
+                "location": "Hélicon"
+              }
+            ],
+            "skills": [
+              "manual skill",
+              "Creative spirit",
+              "Writing skills",
+              "Communication",
+              "Project management",
+              "French",
+              "German",
+              "Korean",
+              "English",
+              "Esquive",
+              "Research",
+              "Mathematique"
+            ]
+          }
+```
+
+
 
 ## Source
 

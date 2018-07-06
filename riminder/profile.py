@@ -343,28 +343,24 @@ class ProfileData():
         """Init."""
         self.client = api
 
-    def check(self, profile_data, profile_metadata={}, profile_reference=None):
+    def check(self, profile_data, training_metadata=[]):
         """Use the api to check weither the profile_data are valid."""
         data = {
-            "profileData": profile_data,
-            "profileMetadata": profile_metadata
+            "profile_json": profile_data,
+            "training_metadata": training_metadata
         }
-        if profile_reference is not None:
-            data["profileData"]['profile_reference'] = _validate_profile_reference(profile_reference)
         response = self.client.post("profile/data/check", data=data)
         return response
 
-    def add(self, source_id, profile_data, profile_metadata={}, profile_reference=None, timestamp_reception=None):
+    def add(self, source_id, profile_data, training_metadata=[], profile_reference=None, timestamp_reception=None):
         """Use the api to add a new profile using profile_data."""
         data = {
             "source_id": _validate_source_id(source_id),
-            "profileData": profile_data,
-            "profileMetadata": profile_metadata
+            "profile_json": profile_data,
+            "training_metadata": training_metadata,
+            "profile_reference": profile_reference,
+            "timestamp_reception": timestamp_reception
         }
-        if profile_reference is not None:
-            data["profileData"]['profile_reference'] = _validate_profile_reference(profile_reference)
-        if timestamp_reception is not None:
-            data['profileData']['timestamp_reception'] = timestamp_reception
         response = self.client.post("profile/data", data=data)
         return response
 
