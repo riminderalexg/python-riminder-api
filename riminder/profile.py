@@ -99,7 +99,7 @@ class Profile(object):
         return response.json()
 
     def add(self, source_id=None, file_path=None, profile_reference="",
-            timestamp_reception=None, training_metadata=None):
+            timestamp_reception=None, training_metadata=[]):
         """
         Add a profile resume to a sourced id
 
@@ -129,7 +129,7 @@ class Profile(object):
             response = self.client.post("profile", data=data, files={"file": files})
         return response.json()
 
-    def addList(self, source_id, dir_path, is_recurcive=False, timestamp_reception=None, training_metadata=None):
+    def addList(self, source_id, dir_path, is_recurcive=False, timestamp_reception=None, training_metadata=[]):
         if not path.isdir(dir_path):
             raise ValueError(dir_path + ' is not a directory')
         files_to_send = _get_files_from_dir(dir_path, is_recurcive)
