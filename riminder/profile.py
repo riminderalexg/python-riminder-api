@@ -350,7 +350,7 @@ class ProfileData():
             "training_metadata": training_metadata
         }
         response = self.client.post("profile/data/check", data=data)
-        return response
+        return response.json()
 
     def add(self, source_id, profile_data, training_metadata=[], profile_reference=None, timestamp_reception=None):
         """Use the api to add a new profile using profile_data."""
@@ -362,7 +362,7 @@ class ProfileData():
             "timestamp_reception": timestamp_reception
         }
         response = self.client.post("profile/data", data=data)
-        return response
+        return response.json()
 
 
 def _get_file_metadata(file_path, profile_reference):
