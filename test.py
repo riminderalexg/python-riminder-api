@@ -269,8 +269,7 @@ class TestProfile(unittest.TestCase):
         self.assertEqual(res["code"], 200, msg=errMessage)
 
     def test_check_profile_data_add(self):
-        metadata = {
-          "train": [
+        metadata = [
             {
               "filter_reference": "reference0",
               "stage": None,
@@ -286,7 +285,6 @@ class TestProfile(unittest.TestCase):
               "rating_timestamp": 1530607434
             }
           ]
-        }
         profile_data = {
             "name": "TESTRozé Baptiste",
             "email": "someone@someonelse.com",
@@ -327,15 +325,13 @@ class TestProfile(unittest.TestCase):
           }
         res = self.client.profile.data.check(
             profile_data=profile_data,
-            profile_metadata=metadata,
-            profile_reference=random.randint(0, 999999)
+            training_metadata=metadata,
         )
         errMessage = self.helper.gen_err_msg(res)
         self.assertEqual(res["code"], 200, msg=errMessage)
 
     def test_check_profile_data_add(self):
-        metadata = {
-          "train": [
+        metadata = [
             {
               "filter_reference": "reference0",
               "stage": None,
@@ -351,7 +347,6 @@ class TestProfile(unittest.TestCase):
               "rating_timestamp": 1530607434
             }
           ]
-        }
         profile_data = {
             "name": "TESTRozé Baptiste",
             "email": "someone@someonelse.com",
@@ -394,7 +389,7 @@ class TestProfile(unittest.TestCase):
             source_id=self.helper.add_source_id,
             timestamp_reception=1530607434,
             profile_data=profile_data,
-            profile_metadata=metadata,
+            training_metadata=metadata,
             profile_reference=random.randint(0, 999999)
         )
         errMessage = self.helper.gen_err_msg(res)
