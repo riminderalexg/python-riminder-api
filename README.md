@@ -168,7 +168,7 @@ source_id, rating, whether profile_id or profile_reference and whether filter_id
 Check validate a parsed profile is valid for upload.
 
 ```python
-  client.profile.data.check(profile_data, profile_metadata)
+  client.profile.data.check(profile_data, training_metadata)
 ```
 profile_data is required.
 
@@ -176,7 +176,7 @@ profile_data is required.
 Add a parsed profile to the platform.
 
 ```python
-  client.profile.data.add(source_id, profile_data, profile_metadata, profile_reference, timestamp_reception)
+  client.profile.data.add(source_id, profile_data, training_metadata, profile_reference, timestamp_reception)
 ```
 profile_data and source_id are required.
 
