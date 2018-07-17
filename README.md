@@ -283,14 +283,14 @@ filter_id or filter_reference is required.
 Checks weither your webhook integration is enabled and works.
 
 ```python
-  client.webhook.check()
+  client.webhooks.check()
 ```
 
 * webhook.setHandler()     
 Add an handler of a webhook event
 
 ```python
-  client.webhook.setHandler(event_name, callback)
+  client.webhooks.setHandler(event_name, callback)
 ```
 event_name and callback are required.
 
@@ -298,7 +298,7 @@ event_name and callback are required.
 Checks if a callback is bind to an event
 
 ```python
-  client.webhook.isHandlerPresent(event_name)
+  client.webhooks.isHandlerPresent(event_name)
 ```
 event_name and callback are required.
 
@@ -306,7 +306,7 @@ event_name and callback are required.
 Remove the handler for a webhook event_name
 
 ```python
-  client.webhook.removeHandler(event_name)
+  client.webhooks.removeHandler(event_name)
 ```
 event_name and callback are required.
 
@@ -314,7 +314,7 @@ event_name and callback are required.
 Start the handler for the given webhook request.
 
 ```python
-  client.webhook.handleRequest(request_headers, signature_header)
+  client.webhooks.handle(request_headers, signature_header)
 ```
 request_headers the headers of the webhook request while signature_header is the `HTTP-RIMINDER-SIGNATURE` header only, one of them is required.
 
@@ -334,13 +334,13 @@ Here is an example of how to handle webhooks
 
   # Set an handler for webhook event.
   callback = func_callback
-  resp = client.webhook.setHandler('profile.parse.success', callback)
+  resp = client.webhooks.setHandler('profile.parse.success', callback)
 
   # Get the header of the request sent by the webhook.
   encoded_header = {HTTP-RIMINDER-SIGNATURE: 'some encoded datas'}
 
   # Handle the webhook
-  client.webhook.handleRequest(request_headers=encoded_header)
+  client.webhooks.handle(request_headers=encoded_header)
 ```
 
 

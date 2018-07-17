@@ -19,7 +19,7 @@ class Riminder(object):
         self.webhook_secret = webhook_secret
         self.filter = Filter(self)
         self.profile = Profile(self)
-        self.webhook = Webhook(self)
+        self.webhooks = Webhook(self)
         self.source = Source(self)
 
     def _create_request_url(self, resource_url):
