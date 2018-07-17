@@ -6,7 +6,7 @@ import json
 import random
 
 from riminder import Riminder
-from riminder.webhook import EVENT_FILTER_SCORE_ERROR
+from riminder.webhook import EVENT_FILTER_SCORE_ERROR, EVENT_FILTER_SCORE_START
 
 
 class TestHelper:
@@ -507,6 +507,14 @@ class TestWebhook(unittest.TestCase):
         self.assertEqual(TestWebhook.last_evt_type, EVENT_FILTER_SCORE_ERROR)
         if 'profile' not in TestWebhook.last_decoded_request:
             self.fail('Resquest is not full.')
+
+    def test_handle_request_with_no_handler(self):
+        self.reset_test_value()
+        self.client.webhooks.setHandler(EVENT_FILTER_SCORE_START, TestWebhook.handler_one_arg)
+        webhook_req = self.helper.gen_webhook_request(EVENT_FILTER_SCORE_ERROR)
+        self.client.webhooks.handle(webhook_req)
+        self.assertEqual(TestWebhook.last_evt_type, None)
+        self.assertEqual(TestWebhook.last_decoded_request, None)
 
 
 if __name__ == '__main__':
