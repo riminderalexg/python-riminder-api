@@ -4,6 +4,7 @@ import hashlib
 import base64
 import json
 import random
+import time
 
 from riminder import Riminder
 from riminder.webhook import EVENT_FILTER_SCORE_ERROR, EVENT_FILTER_SCORE_START
@@ -60,7 +61,7 @@ class TestHelper:
                 if scoring['filter_reference'] is None:
                     continue
                 self.profile_id = profile_id
-                self.profile_ref = profile['profile_reference']
+                self.profile_ref = str(profile['profile_reference'])
                 self.filter_id = str(scoring['filter_id'])
                 self.filter_ref = str(scoring['filter_reference'])
                 if scoring['rating'] is not None:
@@ -86,12 +87,12 @@ class TestHelper:
             'profile': {'profile_id': '1', 'profile_reference': 'I\'m free'}
         }
         json_data = json.dumps(data)
-        webhook_secret = bytes(self.webhook_secret, 'ascii')
-        json_data = bytes(json_data, 'utf8')
+        webhook_secret = bytearray(self.webhook_secret, 'ascii')
+        json_data = bytearray(json_data, 'utf8')
         hasher = hmac.new(webhook_secret, json_data, hashlib.sha256)
-        encoded_sign = bytes(hasher.hexdigest(), 'ascii')
-        byte_encoded_sign = base64.encodebytes(encoded_sign)
-        byte_json_data = base64.encodebytes(json_data)
+        encoded_sign = bytearray(hasher.hexdigest(), 'ascii')
+        byte_encoded_sign = base64.b64encode(encoded_sign)
+        byte_json_data = base64.b64encode(json_data)
         sign = '{}.{}'.format(byte_encoded_sign.decode('ascii'), byte_json_data.decode('ascii'))
         res = {'HTTP-RIMINDER-SIGNATURE': sign}
         return res
@@ -330,7 +331,7 @@ class TestProfile(unittest.TestCase):
         errMessage = self.helper.gen_err_msg(res)
         self.assertEqual(res["code"], 200, msg=errMessage)
 
-    def test_check_profile_data_add(self):
+    def test_add_profile_data(self):
         metadata = [
             {
               "filter_reference": "reference0",
@@ -385,12 +386,12 @@ class TestProfile(unittest.TestCase):
               "Human resources"
             ]
           }
-        res = self.client.profile.data.check(
-            source_id=self.helper.add_source_id,
-            timestamp_reception=1530607434,
+        res = self.client.profile.data.add(
             profile_data=profile_data,
             training_metadata=metadata,
-            profile_reference=random.randint(0, 999999)
+            profile_reference=random.randint(0, 99999),
+            timestamp_reception=time.time(),
+            source_id=self.helper.source_id
         )
         errMessage = self.helper.gen_err_msg(res)
         self.assertEqual(res["code"], 200, msg=errMessage)
@@ -458,7 +459,7 @@ class TestWebhook(unittest.TestCase):
     last_decoded_request = None
 
     @staticmethod
-    def handler(event_type, decoded_request):
+    def handler(decoded_request, event_type):
         TestWebhook.last_evt_type = event_type
         TestWebhook.last_decoded_request = decoded_request
 
@@ -468,8 +469,8 @@ class TestWebhook(unittest.TestCase):
 
     @staticmethod
     def reset_test_value():
-        last_evt_type = None
-        last_decoded_request = None
+        TestWebhook.last_evt_type = None
+        TestWebhook.last_decoded_request = None
 
     def setUp(self):
         self.helper = TestHelper()
@@ -504,7 +505,7 @@ class TestWebhook(unittest.TestCase):
         self.client.webhooks.setHandler(EVENT_FILTER_SCORE_ERROR, TestWebhook.handler_one_arg)
         webhook_req = self.helper.gen_webhook_request(EVENT_FILTER_SCORE_ERROR)
         self.client.webhooks.handle(webhook_req)
-        self.assertEqual(TestWebhook.last_evt_type, EVENT_FILTER_SCORE_ERROR)
+        self.assertEqual(TestWebhook.last_evt_type, None)
         if 'profile' not in TestWebhook.last_decoded_request:
             self.fail('Resquest is not full.')
 
