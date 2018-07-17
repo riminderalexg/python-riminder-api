@@ -468,21 +468,21 @@ class TestWebhook(unittest.TestCase):
         self.client = Riminder(api_key=self.helper.getKey(), webhook_secret=self.helper.getWebhookSecret())
 
     def test_post_check(self):
-        res = self.client.webhook.check()
+        res = self.client.webhooks.check()
         self.assertEqual(res['code'], 200, msg=self.helper.gen_err_msg(res))
 
     def test_handle_request(self):
-        self.client.webhook.setHandler(EVENT_FILTER_SCORE_ERROR, TestWebhook.handler)
+        self.client.webhooks.setHandler(EVENT_FILTER_SCORE_ERROR, TestWebhook.handler)
         webhook_req = self.helper.gen_webhook_request(EVENT_FILTER_SCORE_ERROR)
-        self.client.webhook.handleRequest(webhook_req['HTTP-RIMINDER-SIGNATURE'])
+        self.client.webhooks.handle(webhook_req['HTTP-RIMINDER-SIGNATURE'])
         self.assertEqual(TestWebhook.last_evt_type, EVENT_FILTER_SCORE_ERROR)
         if 'profile' not in TestWebhook.last_decoded_request:
             self.fail('Resquest is not full.')
 
     def test_handle_request_with_full_header(self):
-        self.client.webhook.setHandler(EVENT_FILTER_SCORE_ERROR, TestWebhook.handler)
+        self.client.webhooks.setHandler(EVENT_FILTER_SCORE_ERROR, TestWebhook.handler)
         webhook_req = self.helper.gen_webhook_request(EVENT_FILTER_SCORE_ERROR)
-        self.client.webhook.handleRequest(request_headers=webhook_req)
+        self.client.webhooks.handle(request_headers=webhook_req)
         self.assertEqual(TestWebhook.last_evt_type, EVENT_FILTER_SCORE_ERROR)
         if 'profile' not in TestWebhook.last_decoded_request:
             self.fail('Resquest is not full.')

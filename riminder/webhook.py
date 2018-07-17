@@ -77,7 +77,7 @@ class Webhook(object):
             return request_headers[SIGNATURE_HEADER]
         raise ValueError('Error: No {} given'.format(SIGNATURE_HEADER))
 
-    def handleRequest(self, signature_header=None, request_headers={}):
+    def handle(self, request_headers={}, signature_header=None):
         """Handle request."""
         if self.client.webhook_secret is None:
             raise ValueError('Error: no webhook secret.')
@@ -88,7 +88,7 @@ class Webhook(object):
         handler = self._getHandlerForEvent(decoded_request['type'])
         if handler is None:
             return
-        handler(decoded_request['type'], decoded_request)
+        handler(decoded_request, decoded_request['type'])
 
     def _base64Urldecode(self, inp):
         inp = self._strtr(inp, '-_', '+/')
