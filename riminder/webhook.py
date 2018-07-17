@@ -3,6 +3,7 @@ import hmac
 import hashlib
 import base64
 import json
+import inspect
 
 EVENT_PROFILE_PARSE_SUCCESS = 'profile.parse.success'
 EVENT_PROFILE_PARSE_ERROR = 'profile.parse.error'
@@ -88,6 +89,10 @@ class Webhook(object):
         handler = self._getHandlerForEvent(decoded_request['type'])
         if handler is None:
             return
+        if (len(inspect.getargspec(handler)[0]) == 1):
+            handler(decoded_request)
+            return
+
         handler(decoded_request, decoded_request['type'])
 
     def _base64Urldecode(self, inp):

@@ -286,7 +286,7 @@ class TestProfile(unittest.TestCase):
             }
           ]
         profile_data = {
-            "name": "TESTRozé Baptiste",
+            "name": "TESTRoze Baptiste",
             "email": "someone@someonelse.com",
             "address": "1 rue de somexhereelse",
             "experiences": [
@@ -303,9 +303,9 @@ class TestProfile(unittest.TestCase):
               {
                 "start": "2000",
                 "end": "2018",
-                "title": "Diplome d'ingénieur",
+                "title": "Diplome d'ingenieur",
                 "school": "UTT",
-                "description": "Management des systèmes d'information",
+                "description": "Management des systemes d'information",
                 "location": "Mars"
               }
             ],
@@ -348,7 +348,7 @@ class TestProfile(unittest.TestCase):
             }
           ]
         profile_data = {
-            "name": "TESTRozé Baptiste",
+            "name": "TESTRoze Baptiste",
             "email": "someone@someonelse.com",
             "address": "1 rue de somexhereelse",
             "experiences": [
@@ -365,9 +365,9 @@ class TestProfile(unittest.TestCase):
               {
                 "start": "2000",
                 "end": "2018",
-                "title": "Diplome d'ingénieur",
+                "title": "Diplome d'ingenieur",
                 "school": "UTT",
-                "description": "Management des systèmes d'information",
+                "description": "Management des systemes d'information",
                 "location": "Mars"
               }
             ],
@@ -385,7 +385,7 @@ class TestProfile(unittest.TestCase):
               "Human resources"
             ]
           }
-        res = self.client.profile.data.check(
+        res = self.client.profile.data.add(
             source_id=self.helper.add_source_id,
             timestamp_reception=1530607434,
             profile_data=profile_data,
@@ -458,7 +458,7 @@ class TestWebhook(unittest.TestCase):
     last_decoded_request = None
 
     @staticmethod
-    def handler(event_type, decoded_request):
+    def handler(decoded_request, event_type):
         TestWebhook.last_evt_type = event_type
         TestWebhook.last_decoded_request = decoded_request
 
@@ -468,8 +468,8 @@ class TestWebhook(unittest.TestCase):
 
     @staticmethod
     def reset_test_value():
-        last_evt_type = None
-        last_decoded_request = None
+        TestWebhook.last_evt_type = None
+        TestWebhook.last_decoded_request = None
 
     def setUp(self):
         self.helper = TestHelper()
@@ -504,7 +504,6 @@ class TestWebhook(unittest.TestCase):
         self.client.webhooks.setHandler(EVENT_FILTER_SCORE_ERROR, TestWebhook.handler_one_arg)
         webhook_req = self.helper.gen_webhook_request(EVENT_FILTER_SCORE_ERROR)
         self.client.webhooks.handle(webhook_req)
-        self.assertEqual(TestWebhook.last_evt_type, EVENT_FILTER_SCORE_ERROR)
         if 'profile' not in TestWebhook.last_decoded_request:
             self.fail('Resquest is not full.')
 

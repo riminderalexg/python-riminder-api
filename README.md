@@ -1,8 +1,8 @@
 # python-riminder-api
 🐍 Riminder API Python Wrapper
 
-# python2
-  python2 package is available [here](https://github.com/Riminder/python-riminder-api/tree/masterpython2).
+# python3
+  python3 package is available [here](https://github.com/Riminder/python-riminder-api/tree/master).
 
 # Installation
 The package is available for python3.5 >= or python2.7.*
@@ -329,7 +329,7 @@ Here is an example of how to handle webhooks
 ```python
   import riminder
 
-  def func_callback(event_name, webhook_data):
+  def func_callback(webhook_data, event_name):
     print("{} {}".format(event_name, webhook_data)
 
   client = riminder.Riminder('api_key', webhook_secret='webhook_key')
