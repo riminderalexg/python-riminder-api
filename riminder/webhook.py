@@ -1,9 +1,13 @@
 """Webhook support."""
 import hmac
 import hashlib
-import base64
 import json
 import inspect
+import sys
+
+from . import base64Wrapper as base64W
+from . import bytesutils
+from . import hmacutils
 
 EVENT_PROFILE_PARSE_SUCCESS = 'profile.parse.success'
 EVENT_PROFILE_PARSE_ERROR = 'profile.parse.error'
@@ -78,6 +82,13 @@ class Webhook(object):
             return request_headers[SIGNATURE_HEADER]
         raise ValueError('Error: No {} given'.format(SIGNATURE_HEADER))
 
+    def _get_fct_number_of_arg(self, fct):
+        """Get the number of argument of a fuction."""
+        py_version = sys.version_info[0]
+        if py_version >= 3:
+            return len(inspect.signature(fct).parameters)
+        return len(inspect.getargspec(fct)[0])
+
     def handle(self, request_headers={}, signature_header=None):
         """Handle request."""
         if self.client.webhook_secret is None:
@@ -89,23 +100,23 @@ class Webhook(object):
         handler = self._getHandlerForEvent(decoded_request['type'])
         if handler is None:
             return
-        if (len(inspect.signature(handler).parameters) == 1):
+        if (self._get_fct_number_of_arg(handler) == 1):
             handler(decoded_request)
             return
         handler(decoded_request, decoded_request['type'])
 
     def _base64Urldecode(self, inp):
         inp = self._strtr(inp, '-_', '+/')
-        byte_inp = base64.decodebytes(bytes(inp, 'ascii'))
+        byte_inp = base64W.decodebytes(bytesutils.strtobytes(inp, 'ascii'))
         return byte_inp.decode('ascii')
 
     def _is_signature_valid(self, signature, payload):
-        utf8_payload = bytes(payload, 'utf8')
-        utf8_wb_secret = bytes(self.client.webhook_secret, 'utf8')
+        utf8_payload = bytesutils.strtobytes(payload, 'utf8')
+        utf8_wb_secret = bytesutils.strtobytes(self.client.webhook_secret, 'utf8')
         hasher = hmac.new(utf8_wb_secret, utf8_payload, hashlib.sha256)
         exp_sign_digest = hasher.hexdigest()
 
-        return hmac.compare_digest(exp_sign_digest, signature)
+        return hmacutils.compare_digest(exp_sign_digest, signature)
 
     def _decode_request(self, encoded_request):
         tmp = encoded_request.split('.', 2)

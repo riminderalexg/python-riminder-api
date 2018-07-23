@@ -6,6 +6,7 @@ import json
 import random
 
 from riminder import Riminder
+from riminder import bytesutils
 from test_assets import test_config
 from riminder.webhook import EVENT_FILTER_SCORE_ERROR, EVENT_FILTER_SCORE_START
 
@@ -87,10 +88,10 @@ class TestHelper:
             'profile': {'profile_id': '1', 'profile_reference': 'I\'m free'}
         }
         json_data = json.dumps(data)
-        webhook_secret = bytearray(self.webhook_secret, 'ascii')
-        json_data = bytearray(json_data, 'utf8')
+        webhook_secret = bytesutils.strtobytes(self.webhook_secret, 'ascii')
+        json_data = bytesutils.strtobytes(json_data, 'utf8')
         hasher = hmac.new(webhook_secret, json_data, hashlib.sha256)
-        encoded_sign = bytearray(hasher.hexdigest(), 'ascii')
+        encoded_sign = bytesutils.strtobytes(hasher.hexdigest(), 'ascii')
         byte_encoded_sign = base64.b64encode(encoded_sign)
         byte_json_data = base64.b64encode(json_data)
         sign = '{}.{}'.format(byte_encoded_sign.decode('ascii'), byte_json_data.decode('ascii'))
@@ -269,7 +270,7 @@ class TestProfile(unittest.TestCase):
             errMessage = "No profile reference found: " + self.helper.gen_err_msg(res)
         self.assertEqual(res["code"], 200, msg=errMessage)
 
-    def test_check_profile_data_add(self):
+    def test_check_profile_json(self):
         metadata = [
             {
               "filter_reference": "reference0",
@@ -324,14 +325,14 @@ class TestProfile(unittest.TestCase):
               "Human resources"
             ]
           }
-        res = self.client.profile.data.check(
+        res = self.client.profile.json.check(
             profile_data=profile_data,
             training_metadata=metadata,
         )
         errMessage = self.helper.gen_err_msg(res)
         self.assertEqual(res["code"], 200, msg=errMessage)
 
-    def test_add_profile_data(self):
+    def test_add_profile_json(self):
         metadata = [
             {
               "filter_reference": "reference0",
@@ -386,7 +387,7 @@ class TestProfile(unittest.TestCase):
               "Human resources"
             ]
           }
-        res = self.client.profile.data.add(
+        res = self.client.profile.json.add(
             source_id=self.helper.add_source_id,
             timestamp_reception=1530607434,
             profile_data=profile_data,

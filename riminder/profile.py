@@ -53,7 +53,7 @@ class Profile(object):
         self.parsing = ProfileParsing(self.client)
         self.scoring = ProfileScoring(self.client)
         self.rating = ProfileRating(self.client)
-        self.data = ProfileData(self.client)
+        self.json = ProfileJson(self.client)
 
     def list(self, source_ids=None, seniority="all", stage=None,
             date_start="1494539999", date_end=TIMESTAMP_NOW, filter_id=None,
@@ -336,7 +336,7 @@ class ProfileRating():
         return response.json()
 
 
-class ProfileData():
+class ProfileJson():
     """Gathers route about structured profile."""
 
     def __init__(self, api):

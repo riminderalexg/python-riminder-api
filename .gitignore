@@ -14,3 +14,4 @@ deploy
 build
 test_struct_profile.py
 __pycache__/
+*.pyc
