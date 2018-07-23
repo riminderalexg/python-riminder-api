@@ -4,10 +4,9 @@ import hashlib
 import base64
 import json
 import random
-import time
 
 from riminder import Riminder
-from riminder.test_assets import test_config
+from test_assets import test_config
 from riminder.webhook import EVENT_FILTER_SCORE_ERROR, EVENT_FILTER_SCORE_START
 
 
@@ -128,7 +127,7 @@ class TestProfile(unittest.TestCase):
             self.assertEqual(profile["seniority"], "junior")
 
     def test_post_profile(self):
-        file_path = "riminder/test_assets/cv_test5.pdf"
+        file_path = "test_assets/cv_test5.pdf"
         res = self.client.profile.add(
             source_id=self.helper.add_source_id,
             file_path=file_path,
@@ -136,7 +135,7 @@ class TestProfile(unittest.TestCase):
         self.assertEqual(res["code"], 201, msg=self.helper.gen_err_msg(res))
 
     def test_post_profile_with_metadata(self):
-        file_path = "riminder/test_assets/cv_test8.jpg"
+        file_path = "test_assets/cv_test8.jpg"
         metadata = [{
             'filter_id': self.helper.filter_id,
             'stage': 'later',
@@ -150,7 +149,7 @@ class TestProfile(unittest.TestCase):
         self.assertEqual(res["code"], 201, msg=self.helper.gen_err_msg(res))
 
     def test_post_profiles(self):
-        dir_path = "riminder/test_assets/"
+        dir_path = "test_assets/"
         res = self.client.profile.addList(source_id=self.helper.add_source_id, dir_path=dir_path, is_recurcive=True)
         if len(res['fail']) > 0:
             for kf, failed in res['fail'].items():
@@ -288,7 +287,7 @@ class TestProfile(unittest.TestCase):
             }
           ]
         profile_data = {
-            "name": "TESTRozé Baptiste",
+            "name": "TESTRoze Baptiste",
             "email": "someone@someonelse.com",
             "address": "1 rue de somexhereelse",
             "experiences": [
@@ -305,9 +304,9 @@ class TestProfile(unittest.TestCase):
               {
                 "start": "2000",
                 "end": "2018",
-                "title": "Diplome d'ingénieur",
+                "title": "Diplome d'ingenieur",
                 "school": "UTT",
-                "description": "Management des systèmes d'information",
+                "description": "Management des systemes d'information",
                 "location": "Mars"
               }
             ],
@@ -350,7 +349,7 @@ class TestProfile(unittest.TestCase):
             }
           ]
         profile_data = {
-            "name": "TESTRozé Baptiste",
+            "name": "TESTRoze Baptiste",
             "email": "someone@someonelse.com",
             "address": "1 rue de somexhereelse",
             "experiences": [
@@ -367,9 +366,9 @@ class TestProfile(unittest.TestCase):
               {
                 "start": "2000",
                 "end": "2018",
-                "title": "Diplome d'ingénieur",
+                "title": "Diplome d'ingenieur",
                 "school": "UTT",
-                "description": "Management des systèmes d'information",
+                "description": "Management des systemes d'information",
                 "location": "Mars"
               }
             ],
@@ -388,11 +387,11 @@ class TestProfile(unittest.TestCase):
             ]
           }
         res = self.client.profile.data.add(
+            source_id=self.helper.add_source_id,
+            timestamp_reception=1530607434,
             profile_data=profile_data,
             training_metadata=metadata,
-            profile_reference=random.randint(0, 99999),
-            timestamp_reception=time.time(),
-            source_id=self.helper.source_id
+            profile_reference=random.randint(0, 999999)
         )
         errMessage = self.helper.gen_err_msg(res)
         self.assertEqual(res["code"], 200, msg=errMessage)
@@ -506,7 +505,6 @@ class TestWebhook(unittest.TestCase):
         self.client.webhooks.setHandler(EVENT_FILTER_SCORE_ERROR, TestWebhook.handler_one_arg)
         webhook_req = self.helper.gen_webhook_request(EVENT_FILTER_SCORE_ERROR)
         self.client.webhooks.handle(webhook_req)
-        self.assertEqual(TestWebhook.last_evt_type, None)
         if 'profile' not in TestWebhook.last_decoded_request:
             self.fail('Resquest is not full.')
 

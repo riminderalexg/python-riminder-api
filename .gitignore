@@ -13,3 +13,4 @@ env/
 deploy
 build
 test_struct_profile.py
+__pycache__/
