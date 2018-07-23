@@ -349,7 +349,7 @@ class ProfileData():
             "profile_json": profile_data,
             "training_metadata": training_metadata
         }
-        response = self.client.post("profile/data/check", data=data)
+        response = self.client.post("profile/json/check", data=data)
         return response.json()
 
     def add(self, source_id, profile_data, training_metadata=[], profile_reference=None, timestamp_reception=None):
@@ -361,7 +361,7 @@ class ProfileData():
             "profile_reference": profile_reference,
             "timestamp_reception": timestamp_reception
         }
-        response = self.client.post("profile/data", data=data)
+        response = self.client.post("profile/json", data=data)
         return response.json()
 
 
