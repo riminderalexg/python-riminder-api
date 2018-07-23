@@ -6,7 +6,7 @@ import json
 import random
 
 from riminder import Riminder
-from riminder.test_assets import test_config
+from test_assets import test_config
 from riminder.webhook import EVENT_FILTER_SCORE_ERROR, EVENT_FILTER_SCORE_START
 
 
@@ -127,7 +127,7 @@ class TestProfile(unittest.TestCase):
             self.assertEqual(profile["seniority"], "junior")
 
     def test_post_profile(self):
-        file_path = "riminder/test_assets/cv_test5.pdf"
+        file_path = "test_assets/cv_test5.pdf"
         res = self.client.profile.add(
             source_id=self.helper.add_source_id,
             file_path=file_path,
@@ -135,7 +135,7 @@ class TestProfile(unittest.TestCase):
         self.assertEqual(res["code"], 201, msg=self.helper.gen_err_msg(res))
 
     def test_post_profile_with_metadata(self):
-        file_path = "riminder/test_assets/cv_test8.jpg"
+        file_path = "test_assets/cv_test8.jpg"
         metadata = [{
             'filter_id': self.helper.filter_id,
             'stage': 'later',
@@ -149,7 +149,7 @@ class TestProfile(unittest.TestCase):
         self.assertEqual(res["code"], 201, msg=self.helper.gen_err_msg(res))
 
     def test_post_profiles(self):
-        dir_path = "riminder/test_assets/"
+        dir_path = "test_assets/"
         res = self.client.profile.addList(source_id=self.helper.add_source_id, dir_path=dir_path, is_recurcive=True)
         if len(res['fail']) > 0:
             for kf, failed in res['fail'].items():
