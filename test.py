@@ -7,13 +7,14 @@ import random
 import time
 
 from riminder import Riminder
+from riminder.test_assets import test_config
 from riminder.webhook import EVENT_FILTER_SCORE_ERROR, EVENT_FILTER_SCORE_START
 
 
 class TestHelper:
     def __init__(self):
-        self.api_key = ""
-        self.webhook_secret = 'totaly_a_valid_secret_key'
+        self.api_key = test_config.API_SECRET
+        self.webhook_secret = test_config.WEBHOOK_SECRET
         self.source_id = None
         self.add_source_id = None
         self.profile_id = None
@@ -24,7 +25,7 @@ class TestHelper:
         self.stage = 'NEW'
         self.source_type = 'api'
         # if source_name is empty no name is selected
-        self.source_name = []
+        self.source_name = test_config.SOURCE_NAMES
 
     def getKey(self):
         return self.api_key

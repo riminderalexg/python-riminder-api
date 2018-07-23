@@ -6,6 +6,7 @@ lib
 lib64
 pyvenv.cfg
 riminder/__pycache__/
+riminder/test_assets/__pycache__/
 share/
 tmp
 env/
