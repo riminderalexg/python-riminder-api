@@ -137,17 +137,40 @@ class TestProfile(unittest.TestCase):
 
     def test_post_profile_with_metadata(self):
         file_path = "test_assets/cv_test8.jpg"
-        metadata = [{
-            'filter_id': self.helper.filter_id,
-            'stage': 'later',
-            'rating': 2
-        }]
+        metadata = [
+            {
+              "filter_reference": self.helper.filter_ref,
+              "stage": None,
+              "stage_timestamp": None,
+              "rating": 2,
+              "rating_timestamp": 1530607434
+            }
+          ]
         res = self.client.profile.add(
             source_id=self.helper.add_source_id,
             file_path=file_path,
-            training_metadata=metadata
+            training_metadata=metadata,
+            profile_reference=str(random.randint(0, 999999)),
+            timestamp_reception=str(1530607434)
         )
         self.assertEqual(res["code"], 201, msg=self.helper.gen_err_msg(res))
+
+    def test_post_profile_with_bad_metadata(self):
+        file_path = "test_assets/cv_test8.jpg"
+        metadata = metadata = [
+            {
+              "filter_id": self.helper.filter_ref,
+              "stage": "None",
+              "stage_timestamp": None,
+              "rating": 2,
+              "rating_timestamp": 1530607434
+            }
+          ]
+        self.assertRaises(ValueError, self.client.profile.add,
+            self.helper.add_source_id,
+            file_path, str(random.randint(0, 999999)),
+            1530607434,
+            metadata)
 
     def test_post_profiles(self):
         dir_path = "test_assets/"
@@ -273,14 +296,7 @@ class TestProfile(unittest.TestCase):
     def test_check_profile_json(self):
         metadata = [
             {
-              "filter_reference": "reference0",
-              "stage": None,
-              "stage_timestamp": None,
-              "rating": 2,
-              "rating_timestamp": 1530607434
-            },
-            {
-              "filter_reference": "reference1",
+              "filter_reference": self.helper.filter_ref,
               "stage": None,
               "stage_timestamp": None,
               "rating": 2,
@@ -332,17 +348,62 @@ class TestProfile(unittest.TestCase):
         errMessage = self.helper.gen_err_msg(res)
         self.assertEqual(res["code"], 200, msg=errMessage)
 
-    def test_add_profile_json(self):
+    def test_check_profile_json_bad_metadata(self):
         metadata = [
             {
-              "filter_reference": "reference0",
+              "filter_id": self.helper.filter_ref,
               "stage": None,
               "stage_timestamp": None,
               "rating": 2,
               "rating_timestamp": 1530607434
-            },
+            }
+          ]
+        profile_data = {
+            "name": "TESTRoze Baptiste",
+            "email": "someone@someonelse.com",
+            "address": "1 rue de somexhereelse",
+            "experiences": [
+              {
+                "start": "15/02/2018",
+                "end": "1/06/2018",
+                "title": "Advisor",
+                "company": "PwC luxembourg",
+                "location": "Paris",
+                "description": "Doing IT integration and RPA"
+              }
+            ],
+            "educations": [
+              {
+                "start": "2000",
+                "end": "2018",
+                "title": "Diplome d'ingenieur",
+                "school": "UTT",
+                "description": "Management des systemes d'information",
+                "location": "Mars"
+              }
+            ],
+            "skills": [
+              "manual skill",
+              "Creative spirit",
+              "Writing skills",
+              "Communication",
+              "Project management",
+              "French",
+              "German",
+              "Korean",
+              "English",
+              "Accounting",
+              "Human resources"
+            ]
+          }
+        self.assertRaises(ValueError, self.client.profile.json.check,
+            profile_data,
+            metadata)
+
+    def test_add_profile_json(self):
+        metadata = [
             {
-              "filter_reference": "reference1",
+              "filter_reference": self.helper.filter_ref,
               "stage": None,
               "stage_timestamp": None,
               "rating": 2,
@@ -392,10 +453,66 @@ class TestProfile(unittest.TestCase):
             timestamp_reception=1530607434,
             profile_data=profile_data,
             training_metadata=metadata,
-            profile_reference=random.randint(0, 999999)
+            profile_reference=str(random.randint(0, 999999))
         )
         errMessage = self.helper.gen_err_msg(res)
-        self.assertEqual(res["code"], 200, msg=errMessage)
+        self.assertEqual(res["code"], 201, msg=errMessage)
+
+
+def test_add_profile_json_bad_meta(self):
+    metadata = [
+        {
+          "zap": self.helper.filter_ref,
+          "stage": None,
+          "stage_timestamp": None,
+          "rating": 2,
+          "rating_timestamp": 1530607434
+        }
+      ]
+    profile_data = {
+        "name": "TESTRoze Baptiste",
+        "email": "someone@someonelse.com",
+        "address": "1 rue de somexhereelse",
+        "experiences": [
+          {
+            "start": "15/02/2018",
+            "end": "1/06/2018",
+            "title": "Advisor",
+            "company": "PwC luxembourg",
+            "location": "Paris",
+            "description": "Doing IT integration and RPA"
+          }
+        ],
+        "educations": [
+          {
+            "start": "2000",
+            "end": "2018",
+            "title": "Diplome d'ingenieur",
+            "school": "UTT",
+            "description": "Management des systemes d'information",
+            "location": "Mars"
+          }
+        ],
+        "skills": [
+          "manual skill",
+          "Creative spirit",
+          "Writing skills",
+          "Communication",
+          "Project management",
+          "French",
+          "German",
+          "Korean",
+          "English",
+          "Accounting",
+          "Human resources"
+        ]
+      }
+    self.assertRaises(ValueError, self.client.profile.json.add,
+        self.helper.add_source_id,
+        profile_data,
+        metadata,
+        random.randint(0, 999999),
+        1530607434)
 
 
 class TestSource(unittest.TestCase):

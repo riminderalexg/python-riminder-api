@@ -1,3 +1,5 @@
+"""Profile related calls."""
+
 import time
 import magic
 import os
@@ -9,11 +11,17 @@ STAGE_VALUES = [None, "NEW", "YES", "LATER", "NO"]
 SORT_BY_VALUES = [None, "creation", "DESC", "reception", "ranking"]
 VALID_EXTENSIONS = ['.pdf', '.png', '.jpg', '.jpeg', '.bmp', '.doc', '.docx', '.rtf', '.dotx', '.odt', '.odp', '.ppt', '.pptx', '.rtf', '.msg']
 INVALID_FILENAME = ['.', '..']
+TRAINING_METADATA_MANDATORY_FIELD = {'filter_reference': lambda x: _validate_filter_reference(x),
+                                    'stage': lambda x: _validate_stage(x),
+                                    'stage_timestamp': lambda x: _validate_timestamp(x, 'stage_timestamp'),
+                                    'rating': lambda x: _validate_rating(x),
+                                    'rating_timestamp': lambda x: _validate_rating(x)}
 TIMESTAMP_NOW = str(time.time())
 
 
 class Profile(object):
-    """Class that interacts with Riminder API profiles endpoint.
+    """
+    Class that interacts with Riminder API profiles endpoint.
 
     Usage example:
 
@@ -40,13 +48,14 @@ class Profile(object):
     def __init__(self, client):
         """
         Initialize Profile object with Riminder client.
+
         Args:
             client: Riminder client instance <Riminder object>
 
         Returns:
             Profile instance object.
-        """
 
+        """
         self.client = client
         self.stage = ProfileStage(self.client)
         self.document = ProfileDocument(self.client)
@@ -59,10 +68,10 @@ class Profile(object):
             date_start="1494539999", date_end=TIMESTAMP_NOW, filter_id=None,
             page=1, limit=30, sort_by='ranking', filter_reference=None, order_by=None):
         """
-        Retreive all profiles that match the query param
+        Retreive all profiles that match the query param.
 
         Args:
-            date_end:   <string> REQUIRED (default to "1502488799")
+            date_end:   <string> REQUIRED (default to timestamp of now)
                         profiles' last date of reception
             date_start: <string> REQUIRED (default to "1494539999")
                         profiles' first date of reception
@@ -79,10 +88,11 @@ class Profile(object):
 
         Returns:
             Retrieve the profiles data as <dict>
+
         """
         query_params = {}
-        query_params["date_end"] = _validate_date_end(date_end)
-        query_params["date_start"] = _validate_date_start(date_start)
+        query_params["date_end"] = _validate_timestamp(date_end, "date_end")
+        query_params["date_start"] = _validate_timestamp(date_start, "date_start")
         if filter_id:
             query_params["filter_id"] = _validate_filter_id(filter_id)
         if filter_reference:
@@ -101,7 +111,7 @@ class Profile(object):
     def add(self, source_id=None, file_path=None, profile_reference="",
             timestamp_reception=None, training_metadata=[]):
         """
-        Add a profile resume to a sourced id
+        Add a profile resume to a sourced id.
 
         Args:
             source_id:              <string>
@@ -116,11 +126,12 @@ class Profile(object):
         Returns:
             Response that contains code 201 if successful
             Other status codes otherwise.
+
         """
         data = {}
         data["source_id"] = _validate_source_id(source_id)
         data["profile_reference"] = _validate_profile_reference(profile_reference)
-        data["timestamp_reception"] = _validate_timestamp_reception(timestamp_reception)
+        data["timestamp_reception"] = _validate_timestamp(timestamp_reception, "timestamp_reception")
         data["training_metadata"] = _validate_training_metadata(training_metadata)
         files = _get_file_metadata(file_path, profile_reference)
         response = None
@@ -130,6 +141,7 @@ class Profile(object):
         return response.json()
 
     def addList(self, source_id, dir_path, is_recurcive=False, timestamp_reception=None, training_metadata=[]):
+        """Add all profile from a given directory."""
         if not path.isdir(dir_path):
             raise ValueError(dir_path + ' is not a directory')
         files_to_send = _get_files_from_dir(dir_path, is_recurcive)
@@ -154,7 +166,7 @@ class Profile(object):
 
     def get(self, source_id=None, profile_id=None, profile_reference=None):
         """
-        Retrieve the profile information associated with profile id
+        Retrieve the profile information associated with profile id.
 
         Args:
             source_id:              <string>
@@ -164,6 +176,7 @@ class Profile(object):
 
         Returns:
             profile information
+
         """
         query_params = {}
         query_params["source_id"] = _validate_source_id(source_id)
@@ -176,12 +189,15 @@ class Profile(object):
 
 
 class ProfileDocument():
+    """Manage documents related profile calls."""
+
     def __init__(self, api):
+        """Init."""
         self.client = api
 
     def list(self, source_id=None, profile_id=None, profile_reference=None):
         """
-        Retrieve the file information
+        Retrieve the file information.
 
         Args:
             source_id:              <string>
@@ -191,6 +207,7 @@ class ProfileDocument():
 
         Returns:
             document information, like type, name, extension, url.. associated to the profile id
+
         """
         query_params = {}
         query_params["source_id"] = _validate_source_id(source_id)
@@ -203,12 +220,15 @@ class ProfileDocument():
 
 
 class ProfileParsing():
+    """Manage parsing related profile calls."""
+
     def __init__(self, api):
+        """Init."""
         self.client = api
 
     def get(self, source_id=None, profile_id=None, profile_reference=None):
         """
-        Retrieve the parsing information
+        Retrieve the parsing information.
 
         Args:
             source_id:              <string>
@@ -218,6 +238,7 @@ class ProfileParsing():
 
         Returns:
             parsing information
+
         """
         query_params = {}
         query_params["source_id"] = _validate_source_id(source_id)
@@ -230,12 +251,15 @@ class ProfileParsing():
 
 
 class ProfileScoring():
+    """Manage stage related profile calls."""
+
     def __init__(self, api):
+        """Init."""
         self.client = api
 
     def list(self, source_id=None, profile_id=None, profile_reference=None):
         """
-        Retrieve the scoring information
+        Retrieve the scoring information.
 
         Args:
             source_id:              <string>
@@ -245,6 +269,7 @@ class ProfileScoring():
 
         Returns:
             parsing information
+
         """
         query_params = {}
         query_params["source_id"] = _validate_source_id(source_id)
@@ -257,12 +282,15 @@ class ProfileScoring():
 
 
 class ProfileStage():
+    """Manage stage related profile calls."""
+
     def __init__(self, api):
+        """Init."""
         self.client = api
 
     def set(self, source_id=None, profile_id=None, filter_id=None, stage=None, profile_reference=None, filter_reference=None):
         """
-        Edit the profile stage given a filter
+        Edit the profile stage given a filter.
 
         Args:
             profile_id:             <string>
@@ -279,6 +307,7 @@ class ProfileStage():
         Returns:
             Response that contains code 201 if successful
             Other status codes otherwise.
+
         """
         data = {}
         data["source_id"] = _validate_source_id(source_id)
@@ -297,12 +326,15 @@ class ProfileStage():
 
 
 class ProfileRating():
+    """Manage rating related profile calls."""
+
     def __init__(self, api):
+        """Init."""
         self.client = api
 
     def set(self, source_id=None, profile_id=None, filter_id=None, rating=None, profile_reference=None, filter_reference=None):
         """
-        Edit the profile rating given a filter
+        Edit the profile rating given a filter.
 
         Args:
             profile_id:             <string>
@@ -319,6 +351,7 @@ class ProfileRating():
         Returns:
             Response that contains code 201 if successful
             Other status codes otherwise.
+
         """
         data = {}
         data["source_id"] = _validate_source_id(source_id)
@@ -347,7 +380,7 @@ class ProfileJson():
         """Use the api to check weither the profile_data are valid."""
         data = {
             "profile_json": profile_data,
-            "training_metadata": training_metadata,
+            "training_metadata": _validate_training_metadata(training_metadata),
         }
         response = self.client.post("profile/json/check", data=data)
         return response.json()
@@ -357,9 +390,9 @@ class ProfileJson():
         data = {
             "source_id": _validate_source_id(source_id),
             "profile_json": profile_data,
-            "training_metadata": training_metadata,
+            "training_metadata": _validate_training_metadata(training_metadata),
             "profile_reference": profile_reference,
-            "timestamp_reception": timestamp_reception
+            "timestamp_reception": _validate_timestamp(timestamp_reception, 'timestamp_reception')
         }
         response = self.client.post("profile/json", data=data)
         return response.json()
@@ -389,7 +422,16 @@ def _validate_source_ids(value):
 
 def _validate_training_metadata(value):
     if not isinstance(value, list):
-        raise TypeError("training_metadata must be a list")
+        raise TypeError("training_metadata must be a list of dict")
+    if len(value) == 0:
+        return value
+    if not isinstance(value[0], dict):
+        raise TypeError("training_metadata must be a list of dict")
+    for metadata in value:
+        for mandat_field, field_validator in TRAINING_METADATA_MANDATORY_FIELD.items():
+            if mandat_field not in metadata:
+                raise ValueError("Trainig metadata '{}' must have {} field.".format(metadata, mandat_field))
+            field_validator(metadata[mandat_field])
     return value
 
 
@@ -415,22 +457,10 @@ def _validate_seniority(value):
 
 
 def _validate_stage(value):
+    if value is None:
+        return value
     if value not in STAGE_VALUES:
-        raise ValueError("stage value must be in {}".format(str(STAGE_VALUES)))
-
-    return value
-
-
-def _validate_date_start(value):
-    if not isinstance(value, str):
-        raise TypeError("date_start must be string")
-
-    return value
-
-
-def _validate_date_end(value):
-    if not isinstance(value, str):
-        raise TypeError("date_end must be string")
+        raise ValueError("stage value must be in {} not {}".format(str(STAGE_VALUES), value))
 
     return value
 
@@ -450,8 +480,10 @@ def _validate_filter_reference(value):
 
 
 def _validate_profile_reference(value):
+    if value is None:
+        return value
     if not isinstance(value, str) and value is not None:
-        raise TypeError("profile_reference must be string")
+        raise TypeError("profile_reference must be string not {}".format(value))
 
     return value
 
@@ -484,10 +516,11 @@ def _validate_sort_by(value):
     return value
 
 
-def _validate_timestamp_reception(value):
+def _validate_timestamp(value, var_name="timestamp"):
+    if isinstance(value, int) or isinstance(value, float):
+        return str(value)
     if not isinstance(value, str) and value is not None:
-        raise TypeError("timestamp_reception must be string")
-
+        raise TypeError("{} must be string or a int".format(var_name))
     return value
 
 
