@@ -1,9 +1,6 @@
 # python-riminder-api
 🐍 Riminder API Python Wrapper
 
-# python2
-  python2 package is available [here](https://github.com/Riminder/python-riminder-api/tree/masterpython2).
-
 # Installation
 The package is available for python3.5 >= or python2.7.*
 ```sh
@@ -164,19 +161,19 @@ Edit the profile rating given a filter, all params are required
 ```
 source_id, rating, whether profile_id or profile_reference and whether filter_id or filter_reference are required.
 
-* profile.data.check().     
+* profile.json.check().     
 Check validate a parsed profile is valid for upload.
 
 ```python
-  client.profile.data.check(profile_data, training_metadata)
+  client.profile.json.check(profile_data, training_metadata)
 ```
 profile_data is required.
 
-* profile.data.add().     
+* profile.json.add().     
 Add a parsed profile to the platform.
 
 ```python
-  client.profile.data.add(source_id, profile_data, training_metadata, profile_reference, timestamp_reception)
+  client.profile.json.add(source_id, profile_data, training_metadata, profile_reference, timestamp_reception)
 ```
 profile_data and source_id are required.
 
