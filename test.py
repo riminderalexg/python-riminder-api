@@ -12,6 +12,9 @@ from riminder.webhook import EVENT_FILTER_SCORE_ERROR, EVENT_FILTER_SCORE_START
 
 
 class TestHelper:
+
+    instance = None
+
     def __init__(self):
         self.api_key = test_config.API_SECRET
         self.webhook_secret = test_config.WEBHOOK_SECRET
@@ -98,12 +101,18 @@ class TestHelper:
         res = {'HTTP-RIMINDER-SIGNATURE': sign}
         return res
 
+    @staticmethod
+    def get_instance():
+        if TestHelper.instance is None:
+            TestHelper.instance = TestHelper()
+            TestHelper.instance.setup()
+        return TestHelper.instance
+
 
 class TestProfile(unittest.TestCase):
 
     def setUp(self):
-        self.helper = TestHelper()
-        self.helper.setup()
+        self.helper = TestHelper.get_instance()
         # init client and profile objects
         self.client = Riminder(api_key=self.helper.getKey())
 
@@ -515,11 +524,66 @@ def test_add_profile_json_bad_meta(self):
         1530607434)
 
 
+def test_add_profile_json_bad_meta_null_ref(self):
+    metadata = [
+        {
+          "filter_reference": None,
+          "stage": None,
+          "stage_timestamp": None,
+          "rating": 2,
+          "rating_timestamp": 1530607434
+        }
+      ]
+    profile_data = {
+        "name": "TESTRoze Baptiste",
+        "email": "someone@someonelse.com",
+        "address": "1 rue de somexhereelse",
+        "experiences": [
+            {
+                "start": "15/02/2018",
+                "end": "1/06/2018",
+                "title": "Advisor",
+                "company": "PwC luxembourg",
+                "location": "Paris",
+                "description": "Doing IT integration and RPA"
+            }
+        ],
+        "educations": [
+            {
+                "start": "2000",
+                "end": "2018",
+                "title": "Diplome d'ingenieur",
+                "school": "UTT",
+                "description": "Management des systemes d'information",
+                "location": "Mars"
+            }
+        ],
+        "skills": [
+                  "manual skill",
+                  "Creative spirit",
+                  "Writing skills",
+                  "Communication",
+                  "Project management",
+                  "French",
+                  "German",
+                  "Korean",
+                  "English",
+                  "Accounting",
+                  "Human resources"
+        ]
+      }
+    self.assertRaises(ValueError, self.client.profile.json.add,
+        self.helper.add_source_id,
+        profile_data,
+        metadata,
+        random.randint(0, 999999),
+        1530607434)
+
+
 class TestSource(unittest.TestCase):
 
     def setUp(self):
-        self.helper = TestHelper()
-        self.helper.setup()
+        self.helper = TestHelper.get_instance()
         # init client and profile objects
         self.client = Riminder(api_key=self.helper.getKey())
 
@@ -542,8 +606,7 @@ class TestSource(unittest.TestCase):
 class TestFilter(unittest.TestCase):
 
     def setUp(self):
-        self.helper = TestHelper()
-        self.helper.setup()
+        self.helper = TestHelper.get_instance()
         # init client and filter objects
         self.client = Riminder(api_key=self.helper.getKey())
 
@@ -591,8 +654,7 @@ class TestWebhook(unittest.TestCase):
         TestWebhook.last_decoded_request = None
 
     def setUp(self):
-        self.helper = TestHelper()
-        self.helper.setup()
+        self.helper = TestHelper.get_instance()
         self.client = Riminder(api_key=self.helper.getKey(), webhook_secret=self.helper.getWebhookSecret())
 
     def test_post_check(self):

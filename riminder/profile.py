@@ -11,7 +11,7 @@ STAGE_VALUES = [None, "NEW", "YES", "LATER", "NO"]
 SORT_BY_VALUES = [None, "creation", "DESC", "reception", "ranking"]
 VALID_EXTENSIONS = ['.pdf', '.png', '.jpg', '.jpeg', '.bmp', '.doc', '.docx', '.rtf', '.dotx', '.odt', '.odp', '.ppt', '.pptx', '.rtf', '.msg']
 INVALID_FILENAME = ['.', '..']
-TRAINING_METADATA_MANDATORY_FIELD = {'filter_reference': lambda x: _validate_filter_reference(x),
+TRAINING_METADATA_MANDATORY_FIELD = {'filter_reference': lambda x: _validate_filter_reference(x, False),
                                     'stage': lambda x: _validate_stage(x),
                                     'stage_timestamp': lambda x: _validate_timestamp(x, 'stage_timestamp'),
                                     'rating': lambda x: _validate_rating(x),
@@ -52,7 +52,7 @@ class Profile(object):
         Args:
             client: Riminder client instance <Riminder object>
 
-        Returns:
+        Returns
             Profile instance object.
 
         """
@@ -86,7 +86,7 @@ class Profile(object):
             source_ids: <array of strings> REQUIRED
             stage:      <string>
 
-        Returns:
+        Returns
             Retrieve the profiles data as <dict>
 
         """
@@ -123,7 +123,7 @@ class Profile(object):
             timestamp_reception:    <string>
                                     original date of the application of the profile
 
-        Returns:
+        Returns
             Response that contains code 201 if successful
             Other status codes otherwise.
 
@@ -174,7 +174,7 @@ class Profile(object):
             profile_id:             <string>
                                     profile id
 
-        Returns:
+        Returns
             profile information
 
         """
@@ -205,7 +205,7 @@ class ProfileDocument():
             profile_id:             <string>
                                     profile id
 
-        Returns:
+        Returns
             document information, like type, name, extension, url.. associated to the profile id
 
         """
@@ -236,7 +236,7 @@ class ProfileParsing():
             profile_id:             <string>
                                     profile id
 
-        Returns:
+        Returns
             parsing information
 
         """
@@ -267,7 +267,7 @@ class ProfileScoring():
             profile_id:             <string>
                                     profile id
 
-        Returns:
+        Returns
             parsing information
 
         """
@@ -304,7 +304,7 @@ class ProfileStage():
             stage:                 <string>
                                     profiles' stage associated to the filter ( null for all, NEW, YES, LATER or NO).
 
-        Returns:
+        Returns
             Response that contains code 201 if successful
             Other status codes otherwise.
 
@@ -348,7 +348,7 @@ class ProfileRating():
             rating:                 <int32>
                                     profile rating from 1 to 4 associated to the filter.
 
-        Returns:
+        Returns
             Response that contains code 201 if successful
             Other status codes otherwise.
 
@@ -472,7 +472,13 @@ def _validate_filter_id(value):
     return value
 
 
-def _validate_filter_reference(value):
+def _validate_filter_reference(value, acceptnone=True):
+    if value is None:
+        if acceptnone is False:
+            raise TypeError("filter_reference must not be None")
+        else:
+            return value
+
     if not isinstance(value, str) and value is not None:
         raise TypeError("filter_reference must be string")
 
