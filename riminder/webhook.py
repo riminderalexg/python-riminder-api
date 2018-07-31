@@ -19,6 +19,12 @@ EVENT_FILTER_TRAIN_START = 'filter.train.start'
 EVENT_FILTER_SCORE_SUCCESS = 'filter.score.success'
 EVENT_FILTER_SCORE_ERROR = 'filter.score.error'
 EVENT_FILTER_SCORE_START = 'filter.score.start'
+ACTION_STAGE_SUCCESS = 'action.stage.success'
+ACTION_STAGE_ERROR = 'action.stage.error'
+ACTION_RATING_SUCCESS = 'action.rating.success'
+ACTION_RATING_ERROR = 'action.rating.error'
+
+
 SIGNATURE_HEADER = 'HTTP-RIMINDER-SIGNATURE'
 
 
@@ -38,7 +44,11 @@ class Webhook(object):
             EVENT_FILTER_TRAIN_START: None,
             EVENT_FILTER_SCORE_SUCCESS: None,
             EVENT_FILTER_SCORE_ERROR: None,
-            EVENT_FILTER_SCORE_START: None
+            EVENT_FILTER_SCORE_START: None,
+            ACTION_STAGE_SUCCESS: None,
+            ACTION_STAGE_ERROR: None,
+            ACTION_RATING_SUCCESS: None,
+            ACTION_RATING_ERROR: None,
         }
 
     def check(self):
