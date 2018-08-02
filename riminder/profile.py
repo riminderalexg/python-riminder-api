@@ -379,7 +379,7 @@ class ProfileJson():
     def check(self, profile_data, training_metadata=[]):
         """Use the api to check weither the profile_data are valid."""
         data = {
-            "profile_json": profile_data,
+            "profile_json": _validate_dict(profile_data, "profile_data"),
             "training_metadata": _validate_training_metadata(training_metadata),
         }
         response = self.client.post("profile/json/check", data=data)
@@ -389,13 +389,23 @@ class ProfileJson():
         """Use the api to add a new profile using profile_data."""
         data = {
             "source_id": _validate_source_id(source_id),
-            "profile_json": profile_data,
+            "profile_json": _validate_dict(profile_data, "profile_data"),
             "training_metadata": _validate_training_metadata(training_metadata),
-            "profile_reference": profile_reference,
-            "timestamp_reception": _validate_timestamp(timestamp_reception, 'timestamp_reception')
+            "profile_reference": profile_reference
         }
+
+        # some enrichement for profile_json
+        if timestamp_reception is not None:
+            data['profile_json']['timestamp_reception'] = _validate_timestamp(timestamp_reception, 'timestamp_reception')
+
         response = self.client.post("profile/json", data=data)
         return response.json()
+
+
+def _validate_dict(value, var_name="profile_data"):
+    if not isinstance(value, dict):
+        raise TypeError("{} should be a dict dict not a {}".format(var_name, value.__class__.__name__))
+    return value
 
 
 def _get_file_metadata(file_path, profile_reference):
