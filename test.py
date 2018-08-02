@@ -313,16 +313,24 @@ class TestProfile(unittest.TestCase):
             }
           ]
         profile_data = {
-            "name": "TESTRoze Baptiste",
+            "name": "TESTSomone",
+            "phone": "+33689657412",
             "email": "someone@someonelse.com",
             "address": "1 rue de somexhereelse",
+            "location_details": {
+                "text": "1 rue de somexhereelse",
+            },
+            "summary": "I'm not just a test a a reel person!!!!",
             "experiences": [
               {
                 "start": "15/02/2018",
                 "end": "1/06/2018",
                 "title": "Advisor",
                 "company": "PwC luxembourg",
-                "location": "Paris",
+                "location_details": {
+                    "text": "Jupiter",
+                },
+                "location": None,
                 "description": "Doing IT integration and RPA"
               }
             ],
@@ -333,7 +341,10 @@ class TestProfile(unittest.TestCase):
                 "title": "Diplome d'ingenieur",
                 "school": "UTT",
                 "description": "Management des systemes d'information",
-                "location": "Mars"
+                "location_details": {
+                    "text": "Mars",
+                },
+                "location": None,
               }
             ],
             "skills": [
@@ -348,7 +359,21 @@ class TestProfile(unittest.TestCase):
               "English",
               "Accounting",
               "Human resources"
-            ]
+            ],
+            "interests": [
+                "Esquive",
+                "Mathematiques",
+                "Tennis",
+                "Dors"
+            ],
+            "urls": {
+                "from_resume": [],
+                'linkedin': "",
+                'twitter': "",
+                'facebook': "",
+                'github': "https://github.com/TESTSomone",
+                'picture': ""
+            }
           }
         res = self.client.profile.json.check(
             profile_data=profile_data,
@@ -368,16 +393,24 @@ class TestProfile(unittest.TestCase):
             }
           ]
         profile_data = {
-            "name": "TESTRoze Baptiste",
+            "name": "TESTSomone",
+            "phone": "+33689657412",
             "email": "someone@someonelse.com",
             "address": "1 rue de somexhereelse",
+            "location_details": {
+                "text": "1 rue de somexhereelse",
+            },
+            "summary": "I'm not just a test a a reel person!!!!",
             "experiences": [
               {
                 "start": "15/02/2018",
                 "end": "1/06/2018",
                 "title": "Advisor",
                 "company": "PwC luxembourg",
-                "location": "Paris",
+                "location_details": {
+                    "text": "Jupiter",
+                },
+                "location": None,
                 "description": "Doing IT integration and RPA"
               }
             ],
@@ -388,7 +421,10 @@ class TestProfile(unittest.TestCase):
                 "title": "Diplome d'ingenieur",
                 "school": "UTT",
                 "description": "Management des systemes d'information",
-                "location": "Mars"
+                "location_details": {
+                    "text": "Mars",
+                },
+                "location": None,
               }
             ],
             "skills": [
@@ -403,9 +439,38 @@ class TestProfile(unittest.TestCase):
               "English",
               "Accounting",
               "Human resources"
-            ]
+            ],
+            "interests": [
+                "Esquive",
+                "Mathematiques",
+                "Tennis",
+                "Dors"
+            ],
+            "urls": {
+                "from_resume": [],
+                'linkedin': "",
+                'twitter': "",
+                'facebook': "",
+                'github': "https://github.com/TESTSomone",
+                'picture': ""
+            }
           }
         self.assertRaises(ValueError, self.client.profile.json.check,
+            profile_data,
+            metadata)
+
+    def test_check_profile_json_bad_profile_data(self):
+        metadata = [
+            {
+              "filter_reference": self.helper.filter_ref,
+              "stage": None,
+              "stage_timestamp": None,
+              "rating": 2,
+              "rating_timestamp": 1530607434
+            }
+          ]
+        profile_data = "Profile data !"
+        self.assertRaises(TypeError, self.client.profile.json.check,
             profile_data,
             metadata)
 
@@ -420,16 +485,24 @@ class TestProfile(unittest.TestCase):
             }
           ]
         profile_data = {
-            "name": "TESTRoze Baptiste",
+            "name": "TESTSomone",
+            "phone": "+33689657412",
             "email": "someone@someonelse.com",
             "address": "1 rue de somexhereelse",
+            "location_details": {
+                "text": "1 rue de somexhereelse",
+            },
+            "summary": "I'm not just a test a a reel person!!!!",
             "experiences": [
               {
                 "start": "15/02/2018",
                 "end": "1/06/2018",
                 "title": "Advisor",
                 "company": "PwC luxembourg",
-                "location": "Paris",
+                "location_details": {
+                    "text": "Jupiter",
+                },
+                "location": None,
                 "description": "Doing IT integration and RPA"
               }
             ],
@@ -440,7 +513,10 @@ class TestProfile(unittest.TestCase):
                 "title": "Diplome d'ingenieur",
                 "school": "UTT",
                 "description": "Management des systemes d'information",
-                "location": "Mars"
+                "location_details": {
+                    "text": "Mars",
+                },
+                "location": None,
               }
             ],
             "skills": [
@@ -455,7 +531,21 @@ class TestProfile(unittest.TestCase):
               "English",
               "Accounting",
               "Human resources"
-            ]
+            ],
+            "interests": [
+                "Esquive",
+                "Mathematiques",
+                "Tennis",
+                "Dors"
+            ],
+            "urls": {
+                "from_resume": [],
+                'linkedin': "",
+                'twitter': "",
+                'facebook': "",
+                'github': "https://github.com/TESTSomone",
+                'picture': ""
+            }
           }
         res = self.client.profile.json.add(
             source_id=self.helper.add_source_id,
@@ -479,16 +569,24 @@ def test_add_profile_json_bad_meta(self):
         }
       ]
     profile_data = {
-        "name": "TESTRoze Baptiste",
+        "name": "TESTSomone",
+        "phone": "+33689657412",
         "email": "someone@someonelse.com",
         "address": "1 rue de somexhereelse",
+        "location_details": {
+            "text": "1 rue de somexhereelse",
+        },
+        "summary": "I'm not just a test a a reel person!!!!",
         "experiences": [
           {
             "start": "15/02/2018",
             "end": "1/06/2018",
             "title": "Advisor",
             "company": "PwC luxembourg",
-            "location": "Paris",
+            "location_details": {
+                "text": "Jupiter",
+            },
+            "location": None,
             "description": "Doing IT integration and RPA"
           }
         ],
@@ -499,7 +597,10 @@ def test_add_profile_json_bad_meta(self):
             "title": "Diplome d'ingenieur",
             "school": "UTT",
             "description": "Management des systemes d'information",
-            "location": "Mars"
+            "location_details": {
+                "text": "Mars",
+            },
+            "location": None,
           }
         ],
         "skills": [
@@ -514,7 +615,21 @@ def test_add_profile_json_bad_meta(self):
           "English",
           "Accounting",
           "Human resources"
-        ]
+        ],
+        "interests": [
+            "Esquive",
+            "Mathematiques",
+            "Tennis",
+            "Dors"
+        ],
+        "urls": {
+            "from_resume": [],
+            'linkedin': "",
+            'twitter': "",
+            'facebook': "",
+            'github': "https://github.com/TESTSomone",
+            'picture': ""
+        }
       }
     self.assertRaises(ValueError, self.client.profile.json.add,
         self.helper.add_source_id,
@@ -535,44 +650,88 @@ def test_add_profile_json_bad_meta_null_ref(self):
         }
       ]
     profile_data = {
-        "name": "TESTRoze Baptiste",
+        "name": "TESTSomone",
+        "phone": "+33689657412",
         "email": "someone@someonelse.com",
         "address": "1 rue de somexhereelse",
+        "location_details": {
+            "text": "1 rue de somexhereelse",
+        },
+        "summary": "I'm not just a test a a reel person!!!!",
         "experiences": [
-            {
-                "start": "15/02/2018",
-                "end": "1/06/2018",
-                "title": "Advisor",
-                "company": "PwC luxembourg",
-                "location": "Paris",
-                "description": "Doing IT integration and RPA"
-            }
+          {
+            "start": "15/02/2018",
+            "end": "1/06/2018",
+            "title": "Advisor",
+            "company": "PwC luxembourg",
+            "location_details": {
+                "text": "Jupiter",
+            },
+            "location": None,
+            "description": "Doing IT integration and RPA"
+          }
         ],
         "educations": [
-            {
-                "start": "2000",
-                "end": "2018",
-                "title": "Diplome d'ingenieur",
-                "school": "UTT",
-                "description": "Management des systemes d'information",
-                "location": "Mars"
-            }
+          {
+            "start": "2000",
+            "end": "2018",
+            "title": "Diplome d'ingenieur",
+            "school": "UTT",
+            "description": "Management des systemes d'information",
+            "location_details": {
+                "text": "Mars",
+            },
+            "location": None,
+          }
         ],
         "skills": [
-                  "manual skill",
-                  "Creative spirit",
-                  "Writing skills",
-                  "Communication",
-                  "Project management",
-                  "French",
-                  "German",
-                  "Korean",
-                  "English",
-                  "Accounting",
-                  "Human resources"
-        ]
+          "manual skill",
+          "Creative spirit",
+          "Writing skills",
+          "Communication",
+          "Project management",
+          "French",
+          "German",
+          "Korean",
+          "English",
+          "Accounting",
+          "Human resources"
+        ],
+        "interests": [
+            "Esquive",
+            "Mathematiques",
+            "Tennis",
+            "Dors"
+        ],
+        "urls": {
+            "from_resume": [],
+            'linkedin': "",
+            'twitter': "",
+            'facebook': "",
+            'github': "https://github.com/TESTSomone",
+            'picture': ""
+        }
       }
     self.assertRaises(ValueError, self.client.profile.json.add,
+        self.helper.add_source_id,
+        profile_data,
+        metadata,
+        random.randint(0, 999999),
+        1530607434)
+
+
+def test_add_profile_json_bad_profile_data(self):
+    metadata = [
+        {
+          "filter_reference": self.helper.filter_ref,
+          "stage": None,
+          "stage_timestamp": None,
+          "rating": 2,
+          "rating_timestamp": 1530607434
+        }
+      ]
+    profile_data = "Profile data !"
+    self.assertRaises(TypeError, self.client.profile.json.add,
         self.helper.add_source_id,
         profile_data,
         metadata,
