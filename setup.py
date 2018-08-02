@@ -2,7 +2,7 @@ import sys
 from setuptools import setup
 
 py_require_string = '==2.7.*'
-version_minor = 5
+version_minor = 7
 py_version = sys.version_info[0]
 if py_version >= 3:
     version_minor += 1
