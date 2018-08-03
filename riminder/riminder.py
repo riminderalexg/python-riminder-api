@@ -7,12 +7,15 @@ from .webhook import Webhook
 from .source import Source
 
 RIMINDER_API_URL = "https://www.riminder.net/sf/public/api/v1.0/"
+# RIMINDER_API_URL = "http://www.rimstaging.net/sf/public/api/v1.0/"
 # RIMINDER_API_URL = "http://localhost:8000/public/api/v1.0/"
 
 
 class Riminder(object):
+    """Riminder api wrapper client."""
 
     def __init__(self, api_key, webhook_secret=None):
+        """Init."""
         self.auth_header = {
             "X-API-Key": api_key
         }
@@ -40,6 +43,7 @@ class Riminder(object):
         return bodyparams
 
     def get(self, resource_endpoint, query_params={}):
+        """Don't use it."""
         url = self._create_request_url(resource_endpoint)
         if query_params:
             return req.get(url, headers=self.auth_header, params=query_params)
@@ -47,6 +51,7 @@ class Riminder(object):
             return req.get(url, headers=self.auth_header)
 
     def post(self, resource_endpoint, data={}, files=None):
+        """Don't use it."""
         url = self._create_request_url(resource_endpoint)
         if files:
             data = self._prepare_params_for_file_upload(data)
@@ -55,5 +60,6 @@ class Riminder(object):
             return req.post(url, headers=self.auth_header, json=data)
 
     def patch(self, resource_endpoint, data={}):
+        """Don't use it."""
         url = self._create_request_url(resource_endpoint)
         return req.patch(url, headers=self.auth_header, json=data)

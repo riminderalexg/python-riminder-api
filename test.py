@@ -319,6 +319,9 @@ class TestProfile(unittest.TestCase):
             "address": "1 rue de somexhereelse",
             "location_details": {
                 "text": "1 rue de somexhereelse",
+                "lat": None,
+                "lng": None,
+                "gmaps": None
             },
             "summary": "I'm not just a test a a reel person!!!!",
             "experiences": [
@@ -329,6 +332,9 @@ class TestProfile(unittest.TestCase):
                 "company": "PwC luxembourg",
                 "location_details": {
                     "text": "Jupiter",
+                    "lat": None,
+                    "lng": None,
+                    "gmaps": None
                 },
                 "location": None,
                 "description": "Doing IT integration and RPA"
@@ -343,6 +349,9 @@ class TestProfile(unittest.TestCase):
                 "description": "Management des systemes d'information",
                 "location_details": {
                     "text": "Mars",
+                    "lat": None,
+                    "lng": None,
+                    "gmaps": None
                 },
                 "location": None,
               }
@@ -399,6 +408,9 @@ class TestProfile(unittest.TestCase):
             "address": "1 rue de somexhereelse",
             "location_details": {
                 "text": "1 rue de somexhereelse",
+                "lat": None,
+                "lng": None,
+                "gmaps": None
             },
             "summary": "I'm not just a test a a reel person!!!!",
             "experiences": [
@@ -409,6 +421,9 @@ class TestProfile(unittest.TestCase):
                 "company": "PwC luxembourg",
                 "location_details": {
                     "text": "Jupiter",
+                    "lat": None,
+                    "lng": None,
+                    "gmaps": None
                 },
                 "location": None,
                 "description": "Doing IT integration and RPA"
@@ -423,6 +438,9 @@ class TestProfile(unittest.TestCase):
                 "description": "Management des systemes d'information",
                 "location_details": {
                     "text": "Mars",
+                    "lat": None,
+                    "lng": None,
+                    "gmaps": None
                 },
                 "location": None,
               }
@@ -491,6 +509,9 @@ class TestProfile(unittest.TestCase):
             "address": "1 rue de somexhereelse",
             "location_details": {
                 "text": "1 rue de somexhereelse",
+                "lat": None,
+                "lng": None,
+                "gmaps": None
             },
             "summary": "I'm not just a test a a reel person!!!!",
             "experiences": [
@@ -501,6 +522,9 @@ class TestProfile(unittest.TestCase):
                 "company": "PwC luxembourg",
                 "location_details": {
                     "text": "Jupiter",
+                    "lat": None,
+                    "lng": None,
+                    "gmaps": None
                 },
                 "location": None,
                 "description": "Doing IT integration and RPA"
@@ -515,6 +539,9 @@ class TestProfile(unittest.TestCase):
                 "description": "Management des systemes d'information",
                 "location_details": {
                     "text": "Mars",
+                    "lat": None,
+                    "lng": None,
+                    "gmaps": None
                 },
                 "location": None,
               }
@@ -575,6 +602,9 @@ def test_add_profile_json_bad_meta(self):
         "address": "1 rue de somexhereelse",
         "location_details": {
             "text": "1 rue de somexhereelse",
+            "lat": None,
+            "lng": None,
+            "gmaps": None
         },
         "summary": "I'm not just a test a a reel person!!!!",
         "experiences": [
@@ -585,6 +615,9 @@ def test_add_profile_json_bad_meta(self):
             "company": "PwC luxembourg",
             "location_details": {
                 "text": "Jupiter",
+                "lat": None,
+                "lng": None,
+                "gmaps": None
             },
             "location": None,
             "description": "Doing IT integration and RPA"
@@ -599,6 +632,9 @@ def test_add_profile_json_bad_meta(self):
             "description": "Management des systemes d'information",
             "location_details": {
                 "text": "Mars",
+                "lat": None,
+                "lng": None,
+                "gmaps": None
             },
             "location": None,
           }
@@ -656,6 +692,9 @@ def test_add_profile_json_bad_meta_null_ref(self):
         "address": "1 rue de somexhereelse",
         "location_details": {
             "text": "1 rue de somexhereelse",
+            "lat": None,
+            "lng": None,
+            "gmaps": None
         },
         "summary": "I'm not just a test a a reel person!!!!",
         "experiences": [
@@ -666,6 +705,9 @@ def test_add_profile_json_bad_meta_null_ref(self):
             "company": "PwC luxembourg",
             "location_details": {
                 "text": "Jupiter",
+                "lat": None,
+                "lng": None,
+                "gmaps": None
             },
             "location": None,
             "description": "Doing IT integration and RPA"
@@ -680,6 +722,9 @@ def test_add_profile_json_bad_meta_null_ref(self):
             "description": "Management des systemes d'information",
             "location_details": {
                 "text": "Mars",
+                "lat": None,
+                "lng": None,
+                "gmaps": None
             },
             "location": None,
           }
