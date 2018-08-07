@@ -7,15 +7,14 @@ from .webhook import Webhook
 from .source import Source
 
 RIMINDER_API_URL = "https://www.riminder.net/sf/public/api/v1.0/"
-# RIMINDER_API_URL = "http://www.rimstaging.net/sf/public/api/v1.0/"
-# RIMINDER_API_URL = "http://localhost:8000/public/api/v1.0/"
 
 
 class Riminder(object):
     """Riminder api wrapper client."""
 
-    def __init__(self, api_key, webhook_secret=None):
+    def __init__(self, api_key, webhook_secret=None, url=RIMINDER_API_URL):
         """Init."""
+        self.url = url
         self.auth_header = {
             "X-API-Key": api_key
         }
@@ -27,7 +26,7 @@ class Riminder(object):
 
     def _create_request_url(self, resource_url):
         return "{api_endpoint}{resource_url}".format(
-            api_endpoint=RIMINDER_API_URL,
+            api_endpoint=self.url,
             resource_url=resource_url
         )
 
