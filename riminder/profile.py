@@ -396,7 +396,7 @@ class ProfileJson():
 
         # some enrichement for profile_json
         if timestamp_reception is not None:
-            data['profile_json']['timestamp_reception'] = _validate_timestamp(timestamp_reception, 'timestamp_reception')
+            data['timestamp_reception'] = _validate_timestamp(timestamp_reception, 'timestamp_reception')
 
         response = self.client.post("profile/json", data=data)
         return response.json()
