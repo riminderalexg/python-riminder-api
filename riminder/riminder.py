@@ -1,6 +1,11 @@
+"""Riminder object."""
+
+import traceback
+
 import requests as req
 import json
 
+from .exception import RiminderResponseError, RiminderRequestTransfertError
 from .filter import Filter
 from .profile import Profile
 from .webhook import Webhook
@@ -41,24 +46,47 @@ class Riminder(object):
                 bodyparams[key] = json.dumps(value)
         return bodyparams
 
+    def _check_response(self, response):
+        """Check that the response is valid."""
+        try:
+            response.raise_for_status()
+            return response
+        except req.HTTPError:
+            raise RiminderResponseError(response)
+
     def get(self, resource_endpoint, query_params={}):
         """Don't use it."""
         url = self._create_request_url(resource_endpoint)
-        if query_params:
-            return req.get(url, headers=self.auth_header, params=query_params)
-        else:
-            return req.get(url, headers=self.auth_header)
+        resp = None
+        try:
+            if query_params:
+                resp = req.get(url, headers=self.auth_header, params=query_params)
+            else:
+                resp = req.get(url, headers=self.auth_header)
+        except req.exceptions.RequestException as e:
+            raise RiminderRequestTransfertError(e, traceback.format_exc())
+        return self._check_response(resp)
 
     def post(self, resource_endpoint, data={}, files=None):
         """Don't use it."""
         url = self._create_request_url(resource_endpoint)
-        if files:
-            data = self._prepare_params_for_file_upload(data)
-            return req.post(url, headers=self.auth_header, files=files, data=data)
-        else:
-            return req.post(url, headers=self.auth_header, json=data)
+        resp = None
+        try:
+            if files:
+                data = self._prepare_params_for_file_upload(data)
+                resp = req.post(url, headers=self.auth_header, files=files, data=data)
+            else:
+                resp = req.post(url, headers=self.auth_header, json=data)
+        except req.exceptions.RequestException as e:
+            raise RiminderRequestTransfertError(e, traceback.format_exc())
+        return self._check_response(resp)
 
     def patch(self, resource_endpoint, data={}):
         """Don't use it."""
         url = self._create_request_url(resource_endpoint)
-        return req.patch(url, headers=self.auth_header, json=data)
+        resp = None
+        try:
+            resp = req.patch(url, headers=self.auth_header, json=data)
+        except req.exceptions.RequestException as e:
+            raise RiminderRequestTransfertError(e, traceback.format_exc())
+        return self._check_response(resp)

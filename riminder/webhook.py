@@ -54,7 +54,7 @@ class Webhook(object):
     def check(self):
         """Get response from api for POST webhook/check."""
         response = self.client.post("webhook/check")
-        return response.json()
+        return response.json()['data']
 
     def setHandler(self, event_name, callback):
         """Set an handler for given event."""

@@ -106,7 +106,7 @@ class Profile(object):
         query_params["order_by"] = order_by
 
         response = self.client.get("profiles", query_params)
-        return response.json()
+        return response.json()['data']
 
     def add(self, source_id=None, file_path=None, profile_reference="",
             timestamp_reception=None, training_metadata=[]):
@@ -138,7 +138,7 @@ class Profile(object):
         with open(file_path, 'rb') as in_file:
             files = (files[0], in_file, files[2])
             response = self.client.post("profile", data=data, files={"file": files})
-        return response.json()
+        return response.json()['data']
 
     def addList(self, source_id, dir_path, is_recurcive=False, timestamp_reception=None, training_metadata=[]):
         """Add all profile from a given directory."""
@@ -152,10 +152,10 @@ class Profile(object):
                 resp = self.add(source_id=source_id,
                     file_path=file_path, profile_reference="",
                     timestamp_reception=timestamp_reception, training_metadata=training_metadata)
-                if resp['code'] != 200 and resp['code'] != 201:
-                    failed_upload[file_path] = ValueError('Invalid response: ' + str(resp))
-                else:
-                    succeed_upload[file_path] = resp
+                # if resp['code'] != 200 and resp['code'] != 201:
+                #     failed_upload[file_path] = ValueError('Invalid response: ' + str(resp))
+                # else:
+                succeed_upload[file_path] = resp
             except BaseException as e:
                 failed_upload[file_path] = e
         result = {
@@ -185,7 +185,7 @@ class Profile(object):
         if profile_reference:
             query_params["profile_reference"] = _validate_profile_reference(profile_reference)
         response = self.client.get('profile', query_params)
-        return response.json()
+        return response.json()['data']
 
 
 class ProfileDocument():
@@ -216,7 +216,7 @@ class ProfileDocument():
         if profile_reference:
             query_params["profile_reference"] = _validate_profile_reference(profile_reference)
         response = self.client.get('profile/documents', query_params)
-        return response.json()
+        return response.json()['data']
 
 
 class ProfileParsing():
@@ -247,7 +247,7 @@ class ProfileParsing():
         if profile_reference:
             query_params["profile_reference"] = _validate_profile_reference(profile_reference)
         response = self.client.get('profile/parsing', query_params)
-        return response.json()
+        return response.json()['data']
 
 
 class ProfileScoring():
@@ -278,7 +278,7 @@ class ProfileScoring():
         if profile_reference:
             query_params["profile_reference"] = _validate_profile_reference(profile_reference)
         response = self.client.get('profile/scoring', query_params)
-        return response.json()
+        return response.json()['data']
 
 
 class ProfileStage():
@@ -322,7 +322,7 @@ class ProfileStage():
         data["stage"] = _validate_stage(stage)
 
         response = self.client.patch('profile/stage', data=data)
-        return response.json()
+        return response.json()['data']
 
 
 class ProfileRating():
@@ -366,7 +366,7 @@ class ProfileRating():
         data["rating"] = _validate_rating(rating)
 
         response = self.client.patch('profile/rating', data=data)
-        return response.json()
+        return response.json()['data']
 
 
 class ProfileJson():
@@ -383,7 +383,7 @@ class ProfileJson():
             "training_metadata": _validate_training_metadata(training_metadata),
         }
         response = self.client.post("profile/json/check", data=data)
-        return response.json()
+        return response.json()['data']
 
     def add(self, source_id, profile_data, training_metadata=[], profile_reference=None, timestamp_reception=None):
         """Use the api to add a new profile using profile_data."""
@@ -399,7 +399,7 @@ class ProfileJson():
             data['timestamp_reception'] = _validate_timestamp(timestamp_reception, 'timestamp_reception')
 
         response = self.client.post("profile/json", data=data)
-        return response.json()
+        return response.json()['data']
 
 
 def _validate_dict(value, var_name="profile_data"):

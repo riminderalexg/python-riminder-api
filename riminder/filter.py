@@ -17,7 +17,7 @@ class Filter(object):
             query_params["filter_reference"] = self._validate_id(filter_reference, 'filter_reference')
 
         response = self.client.get('filter', query_params)
-        return response.json()
+        return response.json()['data']
 
     def _validate_id(self, value, field_name=''):
         if not isinstance(value, str) and value is not None:
